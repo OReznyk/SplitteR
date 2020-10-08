@@ -41,10 +41,10 @@ public class Register extends AppCompatActivity {
 
         mRegProgBar = findViewById(R.id.reg_progressBar);
 
-       /* if(fAuth.getCurrentUser() != null) {
-            startActivity(new Intent(getApplicationContext(), Register.class));
+        if(fAuth.getCurrentUser() != null) {
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
             finish();
-        }*/
+        }
 
         mRegBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +79,13 @@ public class Register extends AppCompatActivity {
                     }
                 });
             }
+        });
+
+        mLoginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),Login.class));
+        }
         });
     }
 }
