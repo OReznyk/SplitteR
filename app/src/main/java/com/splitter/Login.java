@@ -84,14 +84,14 @@ public class Login extends AppCompatActivity {
 
             }
         });
-
+        // GoTo Registration Activity
         mRegLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(),Register.class));
             }
         });
-
+        // GoTo Reset Password Dialog + sent reset email
         forgotPwdLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +104,7 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String email = resetEmail.getText().toString();
+
                         fAuth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
