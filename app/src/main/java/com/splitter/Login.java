@@ -1,8 +1,10 @@
 package com.splitter;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,7 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class Login extends AppCompatActivity {
     EditText mEmail, mPwd;
     Button mLoginBtn;
-    TextView mRegLink;
+    TextView mRegLink, forgotPwdLink;
     ProgressBar mLogProgBar;
     FirebaseAuth fAuth;
 
@@ -35,6 +39,7 @@ public class Login extends AppCompatActivity {
         mPwd = findViewById(R.id.pwd);
         mLoginBtn = findViewById(R.id.login_button);
         mRegLink = findViewById(R.id.reg_link);
+        forgotPwdLink = findViewById(R.id.forgotPwdLink);
         fAuth = FirebaseAuth.getInstance();
 
         mLogProgBar = findViewById(R.id.log_prog_bar);
@@ -72,6 +77,7 @@ public class Login extends AppCompatActivity {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
                             Toast.makeText(Login.this, "Error! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            mLogProgBar.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -86,6 +92,43 @@ public class Login extends AppCompatActivity {
             }
         });
 
-    }
+        forgotPwdLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText resetEmail = new EditText(v.getContext());
+                final AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(v.getContext());
+                passwordResetDialog.setTitle("Reset Password?");
+                passwordResetDialog.setMessage("Enter your email to receive reset link");
+                passwordResetDialog.setView(resetEmail);
+                passwordResetDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String email = resetEmail.getText().toString();
+                        fAuth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(Login.this, "Reset Link sent To Your Email", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(Login.this, "Error! Reset Link is Not Sent " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
 
+                        passwordResetDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        passwordResetDialog.create().show();
+
+
+            }
+        });
+    }
 }
