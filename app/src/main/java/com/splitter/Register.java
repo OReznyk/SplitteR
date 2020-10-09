@@ -21,13 +21,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends AppCompatActivity {
+    private static final String TAG = "TAG";
     EditText mName, mEmail, mPwd, mPhone;
     Button mRegBtn;
     TextView mLoginLink;
     ProgressBar mRegProgBar;
     FirebaseAuth fAuth;
+    FirebaseFirestore fStore;
+    String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +50,7 @@ public class Register extends AppCompatActivity {
         mRegBtn = findViewById(R.id.reg_button);
         mLoginLink = findViewById(R.id.login_link);
         fAuth = FirebaseAuth.getInstance();
-
+        fStore = FirebaseFirestore.getInstance();
         mRegProgBar = findViewById(R.id.reg_progressBar);
 
         if(fAuth.getCurrentUser() != null) {
@@ -53,8 +61,10 @@ public class Register extends AppCompatActivity {
         mRegBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = mEmail.getText().toString().trim();
+                final String email = mEmail.getText().toString().trim();
                 String pwd = mPwd.getText().toString().trim();
+                final String name = mName.getText().toString();
+                final String phone = mPhone.getText().toString();
 
                 if(TextUtils.isEmpty(email)){
                     mEmail.setError("Email is Required");
@@ -85,12 +95,26 @@ public class Register extends AppCompatActivity {
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    //ToDo: To log failure
-                                   // Log.d(TAG, "Failure: Verification email was NOT sent "+ e.getMessage());
+                                    //to log failure
+                                    Log.d(TAG, "Failure: Verification email was NOT sent "+ e.getMessage());
                                 }
                             });
 
+                            //storing user data to FireStore
                             Toast.makeText(Register.this,"User created.", Toast.LENGTH_SHORT).show();
+                            userID = fAuth.getCurrentUser().getUid();
+                            DocumentReference docRef = fStore.collection("users").document(userID);
+                            Map<String, Object> fsUser = new HashMap<>();
+                            fsUser.put("name", name);
+                            fsUser.put("email", email);
+                            fsUser.put("phone", phone);
+                            docRef.set(fsUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "Success: user Profile is created for "+ userID);
+                                }
+                            });
+
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         }else{
                             Toast.makeText(Register.this, "Error! "+ task.getException().getMessage(),Toast.LENGTH_SHORT).show();
