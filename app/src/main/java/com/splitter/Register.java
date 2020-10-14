@@ -143,7 +143,7 @@ public class Register extends AppCompatActivity {
 
     private void storeUserData(String name, String email, String phone){
         userID = fAuth.getCurrentUser().getUid();
-        DocumentReference docRef = fStore.collection("users").document(userID);
+        DocumentReference docRef = fStore.collection("Users").document(userID);
         Map<String, Object> fsUser = new HashMap<>();
         fsUser.put("name", name);
         fsUser.put("email", email);

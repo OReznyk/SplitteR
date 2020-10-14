@@ -1,41 +1,25 @@
 package com.splitter;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.splitter.Fragments.ProfileFragment;
 
 public class ProfileActivity extends AppCompatActivity {
-    FirebaseAuth fAuth;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        fAuth = FirebaseAuth.getInstance();
     }
-
-    private void userStatusCheck(){
-        FirebaseUser user = fAuth.getCurrentUser();
-        if(user != null){
-            //user signed in; stay
-        }else{
-            //user not signed in; go to Login Activity
-            startActivity(new Intent(ProfileActivity.this, Login.class));
-            finish();
-        }
+    private void initView(){
+        ProfileFragment profileFragment = new ProfileFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container, profileFragment, "");
+        fragmentTransaction.commit();
     }
-
-
-    @Override
-    protected void onStart(){
-        userStatusCheck();
-        super.onStart();
-    }
-
-
 }
