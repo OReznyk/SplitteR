@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         initPageView();
         //database
         fUser = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
+        dbRef = FirebaseDatabase.getInstance().getReference("Users");
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

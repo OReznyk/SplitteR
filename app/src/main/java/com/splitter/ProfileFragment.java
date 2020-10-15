@@ -1,4 +1,4 @@
-package com.splitter.Fragments;
+package com.splitter;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,18 +20,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.splitter.Model.User;
-import com.splitter.R;
 import com.squareup.picasso.Picasso;
 
 public class ProfileFragment extends Fragment {
+
+
+    ImageView avatarIv;
+    TextView nameTv, emailTv, phoneTv;
+
+    User user;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     FirebaseDatabase fDb;
     DatabaseReference dbRef;
-
-    ImageView avatarIv;
-    TextView nameTv, emailTv, phoneTv;
-    User user;
 
     public ProfileFragment(){}
     @Nullable
@@ -39,35 +40,24 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.activity_profile, container, false);
+        View view =  inflater.inflate(R.layout.fragment_profile, container, false);
         firebaseInit();
-        //profileViewsInit();
-        return view;
-    }
-
-    private void firebaseInit(){
-        fAuth = FirebaseAuth.getInstance();
-        fUser = fAuth.getCurrentUser();
-        fDb = FirebaseDatabase.getInstance();
-        dbRef = fDb.getReference("Users");
-    }
-
-    private void profileViewsInit(){
-        avatarIv = getView().findViewById(R.id.ps_avatar);
-        nameTv = getView().findViewById(R.id.ps_name_txt);
-        phoneTv = getView().findViewById(R.id.ps_phone_txt);
-        emailTv = getView().findViewById(R.id.ps_email_txt);
+        avatarIv = view.findViewById(R.id.ps_avatar);
+        nameTv = view.findViewById(R.id.ps_name_txt);
+        phoneTv = view.findViewById(R.id.ps_phone_txt);
+        emailTv = view.findViewById(R.id.ps_email_txt);
         user = new User();
 
         Query query = dbRef.orderByChild("email").equalTo(fUser.getEmail());
+        ProfileFragment profileFragment = new ProfileFragment();
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()){
-                    user.setName(""+ ds.child("name").getValue());
-                    user.setEmail(""+ ds.child("email").getValue());
-                    user.setPhone(""+ ds.child("phone").getValue());
-                    user.setAvatarURL(""+ ds.child("avatar").getValue());
+                    user.setName((String) ds.child("name").getValue());
+                    user.setEmail((String) ds.child("email").getValue());
+                    user.setPhone((String) ds.child("phone").getValue());
+                    user.setAvatarURL((String) ds.child("avatar").getValue());
                     //set data to txts on page
                     nameTv.setText(user.getName());
                     emailTv.setText(user.getEmail());
@@ -86,5 +76,15 @@ public class ProfileFragment extends Fragment {
 
             }
         });
+
+
+        return view;
+    }
+
+    private void firebaseInit(){
+        fAuth = FirebaseAuth.getInstance();
+        fUser = fAuth.getCurrentUser();
+        fDb = FirebaseDatabase.getInstance();
+        dbRef = fDb.getReference("Users");
     }
 }

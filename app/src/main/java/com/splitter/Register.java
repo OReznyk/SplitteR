@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -38,8 +40,6 @@ public class Register extends AppCompatActivity {
     ProgressBar mRegProgBar;
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
-    String userID;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -87,8 +87,7 @@ public class Register extends AppCompatActivity {
                     mPwd.setFocusable(true);
                     return;
                 }
-                registrationToFirebase(email, pwd);
-                storeUserData(name, email, phone);
+                registrationToFirebase(email, pwd, name, phone);
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         });
@@ -108,7 +107,7 @@ public class Register extends AppCompatActivity {
         return super.onSupportNavigateUp();
     }
 
-    private void registrationToFirebase(String email, String pwd){
+    private void registrationToFirebase(String email, String pwd, String name, String phone){
         mRegProgBar.setVisibility(View.VISIBLE);
         // User registration to firebase
         fAuth.createUserWithEmailAndPassword(email,pwd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -117,10 +116,12 @@ public class Register extends AppCompatActivity {
                 if(task.isSuccessful()){
                     // email verification by link
                     mRegProgBar.setVisibility(View.INVISIBLE);
-                    final FirebaseUser user = fAuth.getCurrentUser();
+                    FirebaseUser user = fAuth.getCurrentUser();
+                    String uid = user.getUid();
                     user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            storeUserData(uid, name, email, phone);
                             Toast.makeText(Register.this, "Verification email was sent ", Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -131,7 +132,6 @@ public class Register extends AppCompatActivity {
                             Log.d(TAG, "Failure: Verification email was NOT sent "+ e.getMessage());
                         }
                     });
-                    //storing user data to FireStore
                     Toast.makeText(Register.this,"User created.", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(Register.this, "Error! "+ task.getException().getMessage(),Toast.LENGTH_SHORT).show();
@@ -141,23 +141,25 @@ public class Register extends AppCompatActivity {
         });
     }
 
-    private void storeUserData(String name, String email, String phone){
-        userID = fAuth.getCurrentUser().getUid();
-        DocumentReference docRef = fStore.collection("Users").document(userID);
-        Map<String, Object> fsUser = new HashMap<>();
-        fsUser.put("name", name);
-        fsUser.put("email", email);
-        fsUser.put("phone", phone);
-        docRef.set(fsUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void storeUserData(String uid, String name, String email, String phone){
+        FirebaseDatabase fDb = FirebaseDatabase.getInstance();
+        DatabaseReference dbRef = fDb.getReference("Users");
+        HashMap<Object, String> hashMap = new HashMap<>();
+        hashMap.put("id", uid);
+        hashMap.put("name", name);
+        hashMap.put("email", email);
+        hashMap.put("phone", phone);
+        hashMap.put("image", "");
+        dbRef.child(uid).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Success: User Profile is created for "+ userID);
+                Log.d(TAG, "Success: User Profile is created for "+ uid);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 //to log failure
-                Log.d(TAG, "User Profile is created for "+ userID + " "+ e.getMessage());
+                Log.d(TAG, "User Profile is created for "+ uid + " "+ e.getMessage());
             }
         });
     }
