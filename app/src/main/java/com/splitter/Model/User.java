@@ -1,20 +1,24 @@
 package com.splitter.Model;
 
+import android.net.Uri;
+
 public class User {
     private String id;
     private String name;
     private String phone;
     private String email;
-    private String avatarURL;
+    private Uri avatarURI;
+    private  Uri coverURI;
 
     public User(){}
 
-    public User(String id, String name, String phone, String email, String avatarURL){
+    public User(String id, String name, String phone, String email, Uri avatarURI, Uri coverURI){
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.avatarURL = avatarURL;
+        this.avatarURI = avatarURI;
+        this.coverURI = coverURI;
     }
 
     public void setId(String id) {
@@ -45,13 +49,19 @@ public class User {
         this.email = email;
     }
 
-    public String getAvatarURL() {
-        return avatarURL;
+    public Uri getAvatarURI() {
+        return avatarURI;
     }
 
-    public void setAvatarURL(String avatarURL) {
-        this.avatarURL = avatarURL;
+    public void setAvatarURI(Uri avatarURI) {
+        this.avatarURI = avatarURI;
     }
+
+    public Uri getCoverURI() {
+        return coverURI;
+    }
+
+    public void setCoverURI(Uri coverURI) { this.avatarURI = coverURI; }
 
     public String getId() {
         return id;

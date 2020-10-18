@@ -144,12 +144,13 @@ public class Register extends AppCompatActivity {
     private void storeUserData(String uid, String name, String email, String phone){
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("Users");
-        HashMap<Object, String> hashMap = new HashMap<>();
+        HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("id", uid);
         hashMap.put("name", name);
         hashMap.put("email", email);
         hashMap.put("phone", phone);
         hashMap.put("image", "");
+        hashMap.put("cover", "");
         dbRef.child(uid).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
