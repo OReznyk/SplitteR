@@ -2,6 +2,8 @@ package com.splitter.Model;
 
 import android.net.Uri;
 
+import java.util.List;
+
 public class User {
     private String id;
     private String name;
@@ -9,6 +11,8 @@ public class User {
     private String email;
     private Uri avatarURI;
     private  Uri coverURI;
+
+
 
     public User(){}
 
@@ -20,6 +24,7 @@ public class User {
         this.avatarURI = avatarURI;
         this.coverURI = coverURI;
     }
+
 
     public void setId(String id) {
         this.id = id;
