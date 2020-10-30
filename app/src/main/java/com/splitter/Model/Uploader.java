@@ -78,7 +78,14 @@ public class Uploader {
         return uploaded;
     }
 
-
+    public void sendMessage(String msg, String frId) {
+        dbRef = fDb.getReference("Chats");
+        HashMap<String, Object> hashMap= new HashMap<>();
+        hashMap.put("sender", fUser.getUid());
+        hashMap.put("receiver", frId);
+        hashMap.put("msg", msg);
+        dbRef.push().setValue(hashMap);
+    }
 
 
     //init block

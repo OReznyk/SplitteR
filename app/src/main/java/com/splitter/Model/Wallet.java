@@ -5,7 +5,7 @@ import java.util.HashMap;
 //ToDo add return money option; notification option & etc
 public class Wallet {
     double cash;
-    HashMap<String, Double> usersInDebt; // <userId, debt>
+    HashMap<String, Double> usersInDebt; // <userId, debtSum>
     HashMap<String, Double> usersToReturnMoney; // <userId, debt>
 
     public Wallet() {

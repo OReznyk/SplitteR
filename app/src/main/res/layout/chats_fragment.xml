@@ -3,15 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="220dp"
     tools:context=".Fragments.ChatsFragment">
 
-    <TextView
-        android:id="@+id/txt_chats_elem"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorAccent"
-        android:text="Chat elem "
-        android:textColor="#7B1FA2"
-        android:textSize="36sp" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/users_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="30sp">
+
+        </androidx.recyclerview.widget.RecyclerView>
 
 </FrameLayout>

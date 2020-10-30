@@ -84,6 +84,7 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_vertical"
                     android:padding="5dp"
+                    android:paddingRight="20dp"
                     android:src="@drawable/ic_settings" />
 
             </LinearLayout>
