@@ -7,17 +7,20 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.splitter.Model.ChatsViewModel;
+import com.splitter.Model.ChatModel;
 import com.splitter.R;
 
 public class ChatsFragment extends Fragment {
 
-    private ChatsViewModel mViewModel;
+    private ChatModel mViewModel;
+    RecyclerView recyclerView;
 
     public static ChatsFragment newInstance() {
         return new ChatsFragment();
@@ -26,13 +29,14 @@ public class ChatsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.chats_fragment, container, false);
+        View view =  inflater.inflate(R.layout.chats_fragment, container, false);
+        return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(ChatsViewModel.class);
+
         // TODO: Use the ViewModel
     }
 

@@ -149,7 +149,7 @@ public class Register extends AppCompatActivity {
         hashMap.put("name", name);
         hashMap.put("email", email);
         hashMap.put("phone", phone);
-        hashMap.put("avatar", "");
+        hashMap.put("image", "");
         hashMap.put("cover", "");
         dbRef.child(uid).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

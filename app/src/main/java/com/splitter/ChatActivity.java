@@ -3,14 +3,18 @@ package com.splitter;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,9 +28,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.splitter.Adapters.ChatAdapter;
+import com.splitter.Model.ChatModel;
 import com.splitter.Model.Uploader;
 import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -41,7 +52,10 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseDatabase fDb;
     DatabaseReference dbRef;
 
-    String frID, userId;
+    String otherID, userId;
+
+    List<ChatModel> chatList;
+    ChatAdapter chatAdapter;
 
 
     @Override
@@ -52,10 +66,11 @@ public class ChatActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         fUser = fAuth.getCurrentUser();
         Intent intent = getIntent();
-        frID = intent.getStringExtra("friendsID");
+        otherID = intent.getStringExtra("friendsID");
         fDb = FirebaseDatabase.getInstance();
         dbRef =fDb.getReference("Users");
         getAndSetFriendsData();
+        readMessage();
 
         //handle send message btn clicked
         sendMsgBtn.setOnClickListener(new View.OnClickListener() {
@@ -65,18 +80,70 @@ public class ChatActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(msg)){
                     //send msg
                     uploader = new Uploader();
-                    uploader.sendMessage(msg, frID);
+                    uploader.sendMessage(msg, otherID);
                     //reset msgIv
                     msgIv.setText("");
+                    closeKeyboard();
+
+                    readMessage();
+                    //ToDo solve seen problem
+                    uploader.seenMessage(msg, userId, otherID);
+
 
                 }else{}
             }
         });
-
-
-
     }
 
+
+    //from https://www.geeksforgeeks.org/how-to-programmatically-hide-android-soft-keyboard/
+    private void closeKeyboard()
+    {
+        // this will give us the view which is currently focus in this layout
+        View view = this.getCurrentFocus();
+
+        // if nothing is currently focus then this will protect the app from crash
+        if (view != null) {
+
+            // now assign the system
+            // service to InputMethodManager
+            InputMethodManager manager
+                    = (InputMethodManager)
+                    getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+            manager
+                    .hideSoftInputFromWindow(
+                            view.getWindowToken(), 0);
+        }
+    }
+
+
+
+    private void readMessage() {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats/");
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                chatList.clear();
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    ChatModel chat = dataSnapshot.getValue(ChatModel.class);
+                    if(chat.getReceiver().equals(userId) && chat.getSender().equals(otherID) ||
+                            chat.getReceiver().equals(otherID) && chat.getSender().equals(userId)){
+                        chatList.add(chat);
+                    }
+                    chatAdapter = new ChatAdapter(ChatActivity.this, chatList);
+                    chatAdapter.notifyDataSetChanged();
+
+                    recyclerView.setAdapter(chatAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
 
     private void initView(){
@@ -90,6 +157,17 @@ public class ChatActivity extends AppCompatActivity {
         msgIv = findViewById(R.id.chat_msgIv);
         sendMsgBtn = findViewById(R.id.chat_send_msg_btn);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+
+        chatList = new ArrayList<>();
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        chatAdapter = new ChatAdapter(ChatActivity.this, chatList);
+
+        recyclerView.setAdapter(chatAdapter);
+
     }
 
     private void checkUserStatus(){
@@ -102,7 +180,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
     private void getAndSetFriendsData(){
-        Query userQuery = dbRef.orderByChild("id").equalTo(frID);
+        Query userQuery = dbRef.orderByChild("id").equalTo(otherID);
         userQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -141,4 +219,5 @@ public class ChatActivity extends AppCompatActivity {
         checkUserStatus();
         super.onStart();
     }
+
 }

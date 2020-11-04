@@ -2,13 +2,11 @@ package com.splitter.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,7 +49,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
     public void onBindViewHolder(@NonNull UsersAdapter.MyHolder holder, int position) {
         //get data
         final String friendsId = userList.get(position).getId();
-        String userImage = userList.get(position).getAvatar();
+        String userImage = userList.get(position).getImage();
         String userName = userList.get(position).getName();
         String userEmail = userList.get(position).getEmail();
         //set data
@@ -61,8 +59,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
             Picasso.get().load(userImage)
                     .placeholder(R.drawable.ic_default_avatar)
                     .into(holder.mAvatarIv);
-        }catch (Exception e){
-        }
+        }catch (Exception e){}
+
 
         //handle item click
         holder.itemView.setOnClickListener(new View.OnClickListener() {

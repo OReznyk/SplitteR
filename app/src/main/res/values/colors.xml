@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    cccc
-    <color name="colorPrimary">#A95DAC</color>
-    <color name="colorAccent">#85BAB5</color>
-    <color name="colorWhite">#FEFFFF</color>
-    <color name="colorPrimaryDark">#221B47</color>
+    <color name="colorPrimaryDark">#355C7D</color>
+    <color name="colorPrimary">#6C5B7B</color>
+    <color name="colorAccent">#C06C84</color>
+    <color name="colorBgMsg1">#8CF67280</color>
+    <color name="colorBgMsg2">#8DF8B195</color>
+
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
 </resources>

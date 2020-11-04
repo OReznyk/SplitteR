@@ -5,20 +5,20 @@ public class User {
     private String name;
     private String phone;
     private String email;
-    private String avatar;
+    private String image;
     private  String cover;
 
 
 
     public User(){}
 
-    public User(String id, String name, String phone, String email, String avatar, String
+    public User(String id, String name, String phone, String email, String image, String
             cover){
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.avatar = avatar;
+        this.image = image;
         this.cover = cover;
     }
 
@@ -51,19 +51,19 @@ public class User {
         this.email = email;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getImage() {
+        return image;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getCover() {
         return cover;
     }
 
-    public void setCover(String cover) { this.avatar = cover; }
+    public void setCover(String cover) { this.image = cover; }
 
     public String getId() {
         return id;

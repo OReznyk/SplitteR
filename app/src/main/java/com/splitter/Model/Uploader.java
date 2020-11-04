@@ -11,12 +11,17 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
@@ -78,13 +83,44 @@ public class Uploader {
         return uploaded;
     }
 
-    public void sendMessage(String msg, String frId) {
+    public void seenMessage(String msg, String userId, String otherId) {
+        DatabaseReference refForSeen = FirebaseDatabase.getInstance().getReference("Chats");
+        ValueEventListener seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    ChatModel chat = dataSnapshot.getValue(ChatModel.class);
+                    if (chat.getReceiver().equals(userId) && chat.getSender().equals(otherId)) {
+                        HashMap<String, Object> hashMap= new HashMap<>();
+                        hashMap.put("isSeen", true);
+                        dataSnapshot.getRef().updateChildren(hashMap);
+                    }
+                }
+            }
+
+            @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+    public void sendMessage(String msg, String otherId) {
+        String timeStamp = getCurrentTime();
         dbRef = fDb.getReference("Chats");
         HashMap<String, Object> hashMap= new HashMap<>();
         hashMap.put("sender", fUser.getUid());
-        hashMap.put("receiver", frId);
+        hashMap.put("receiver", otherId);
         hashMap.put("msg", msg);
+        hashMap.put("timeStamp", timeStamp);
+        hashMap.put("isSeen", false);
         dbRef.push().setValue(hashMap);
+    }
+
+    private String getCurrentTime(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
+        String currentDateAndTime = sdf.format(new Date());
+        return currentDateAndTime;
     }
 
 
