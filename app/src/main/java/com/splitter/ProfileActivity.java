@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.splitter.Fragments.ProfileFragment;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -35,11 +36,19 @@ public class ProfileActivity extends AppCompatActivity {
         dbRef = fDb.getReference("Users");*/
     }
 
-    private void checkUserStatus(){
-        if(fUser != null){
+    @Override
+    protected void onStart(){
+        checkUserStatus();
+        super.onStart();
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+    }
 
-        }else{
-            startActivity(new Intent(ProfileActivity.this, Login.class));
+    private void checkUserStatus(){
+        if(fUser == null){
+            startActivity(new Intent(this, Login.class));
             finish();
         }
     }

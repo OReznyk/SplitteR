@@ -27,6 +27,10 @@ import com.splitter.Adapters.PagerAdapter;
 import com.splitter.Fragments.UsersFragment;
 import com.splitter.Model.User;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     TabItem tabChats, tabTemp, tabFriends;
@@ -162,13 +166,34 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    //ToDo chck if user logedin
+    @Override
+    protected void onStart(){
+        checkUserStatus();
+        setOnlineStatus("online");
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+    }
+    @Override
+    protected void onResume() {
+        setOnlineStatus("online");
+        super.onResume();
+    }
+
     private void checkUserStatus(){
-        if(fUser != null){}
-        else {
+        if(fUser == null){
             startActivity(new Intent(this, Login.class));
             finish();
         }
+    }
+    private void setOnlineStatus(String status){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("onlineStatus", status);
+        databaseReference.updateChildren(hashMap);
     }
 
 }

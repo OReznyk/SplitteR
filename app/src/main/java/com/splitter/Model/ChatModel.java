@@ -51,7 +51,7 @@ public class ChatModel{
         return isSeen;
     }
 
-    public void setIsSeen(boolean seen) {
+    public void setSeen(boolean seen) {
         isSeen = seen;
     }
 }

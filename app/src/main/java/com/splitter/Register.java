@@ -147,6 +147,7 @@ public class Register extends AppCompatActivity {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("id", uid);
         hashMap.put("name", name);
+        hashMap.put("onlineStatus", "online");
         hashMap.put("email", email);
         hashMap.put("phone", phone);
         hashMap.put("image", "");
@@ -163,5 +164,23 @@ public class Register extends AppCompatActivity {
                 Log.d(TAG, "User Profile is created for "+ uid + " "+ e.getMessage());
             }
         });
+    }
+
+    @Override
+    protected void onStart(){
+        checkUserStatus();
+        super.onStart();
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+    }
+
+    private void checkUserStatus(){
+        FirebaseUser fUser = fAuth.getCurrentUser();
+        if(fUser != null){
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
     }
 }

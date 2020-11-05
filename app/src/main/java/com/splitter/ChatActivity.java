@@ -170,15 +170,6 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void checkUserStatus(){
-        if(fUser != null){
-            userId = fUser.getUid();
-        }
-        else {
-            startActivity(new Intent(this, Login.class));
-            finish();
-        }
-    }
     private void getAndSetFriendsData(){
         Query userQuery = dbRef.orderByChild("id").equalTo(otherID);
         userQuery.addValueEventListener(new ValueEventListener() {
@@ -187,6 +178,13 @@ public class ChatActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                     String name = ""+dataSnapshot.child("name").getValue();
                     String img = ""+dataSnapshot.child("avatar").getValue();
+                    String onlineStatus = ""+ dataSnapshot.child("onlineStatus").getValue();
+                    if(onlineStatus.equals("online")){
+                        statusTv.setText(onlineStatus);
+                    }
+                    else{
+                        statusTv.setText("Last seen at: "+onlineStatus);
+                    }
                     nameTv.setText(name);
                     try {
                         Picasso.get().load(img).placeholder(R.drawable.ic_default_avatar).into(imgTv);
@@ -217,7 +215,43 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart(){
         checkUserStatus();
+        checkOnlineStatus("online");
         super.onStart();
     }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
+        String currentDateAndTime = sdf.format(new Date());
+        checkOnlineStatus(currentDateAndTime);
+        //ToDo remove isSeenListener
+        //uploader.removeSeenListener();
+    }
 
+    @Override
+    protected void onResume() {
+        checkOnlineStatus("online");
+        super.onResume();
+    }
+
+    private void checkUserStatus(){
+        if(fUser != null){
+            userId = fUser.getUid();
+        }
+        else {
+            startActivity(new Intent(this, Login.class));
+            finish();
+        }
+    }
+    private void checkOnlineStatus(String status){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("onlineStatus", status);
+        databaseReference.updateChildren(hashMap);
+    }
+    @Override
+    public boolean onSupportNavigateUp(){
+        onBackPressed();
+        return super.onSupportNavigateUp();
+    }
 }

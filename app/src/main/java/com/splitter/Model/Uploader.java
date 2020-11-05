@@ -34,6 +34,8 @@ public class Uploader {
     FirebaseUser fUser;
     FirebaseDatabase fDb;
     DatabaseReference dbRef;
+    DatabaseReference refForSeen;
+    ValueEventListener seenListener;
     StorageReference storageReference;
     //storage paths
     String imagesPath = "Users_Profile_Images/";
@@ -84,8 +86,8 @@ public class Uploader {
     }
 
     public void seenMessage(String msg, String userId, String otherId) {
-        DatabaseReference refForSeen = FirebaseDatabase.getInstance().getReference("Chats");
-        ValueEventListener seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
+        refForSeen = FirebaseDatabase.getInstance().getReference("Chats");
+        seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -104,6 +106,10 @@ public class Uploader {
                 }
             });
         }
+
+    public void removeSeenListener(){
+        refForSeen.removeEventListener(seenListener);
+    }
 
     public void sendMessage(String msg, String otherId) {
         String timeStamp = getCurrentTime();

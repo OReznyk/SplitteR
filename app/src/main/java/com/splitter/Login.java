@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.w3c.dom.Text;
 
@@ -117,16 +118,6 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart(){
-        super.onStart();
-        if (fAuth.getCurrentUser() != null) {
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            finish();
-        }
-
-    }
-
     private void loginUser(String email, String pwd){
         mLogProgBar.setVisibility(View.VISIBLE);
 
@@ -148,5 +139,23 @@ public class Login extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onStart(){
+        checkUserStatus();
+        super.onStart();
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+    }
+
+    private void checkUserStatus(){
+        FirebaseUser fUser = fAuth.getCurrentUser();
+        if(fUser != null){
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
     }
 }
