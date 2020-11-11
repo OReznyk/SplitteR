@@ -8,8 +8,6 @@ public class User {
     private String image;
     private  String cover;
 
-
-
     public User(){}
 
     public User(String id, String name, String phone, String email, String image, String

@@ -1,20 +1,24 @@
 package com.splitter.Model;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -34,8 +38,7 @@ public class Uploader {
     FirebaseUser fUser;
     FirebaseDatabase fDb;
     DatabaseReference dbRef;
-    DatabaseReference refForSeen;
-    ValueEventListener seenListener;
+
     StorageReference storageReference;
     //storage paths
     String imagesPath = "Users_Profile_Images/";
@@ -85,32 +88,6 @@ public class Uploader {
         return uploaded;
     }
 
-    public void seenMessage(String msg, String userId, String otherId) {
-        refForSeen = FirebaseDatabase.getInstance().getReference("Chats");
-        seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    ChatModel chat = dataSnapshot.getValue(ChatModel.class);
-                    if (chat.getReceiver().equals(userId) && chat.getSender().equals(otherId)) {
-                        HashMap<String, Object> hashMap= new HashMap<>();
-                        hashMap.put("isSeen", true);
-                        dataSnapshot.getRef().updateChildren(hashMap);
-                    }
-                }
-            }
-
-            @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
-
-    public void removeSeenListener(){
-        refForSeen.removeEventListener(seenListener);
-    }
-
     public void sendMessage(String msg, String otherId) {
         String timeStamp = getCurrentTime();
         dbRef = fDb.getReference("Chats");
@@ -120,9 +97,19 @@ public class Uploader {
         hashMap.put("msg", msg);
         hashMap.put("timeStamp", timeStamp);
         hashMap.put("isSeen", false);
-        dbRef.push().setValue(hashMap);
+        //To get objects id
+        DatabaseReference msgID = dbRef.push();
+        hashMap.put("id", msgID.getKey());
+        msgID.setValue(hashMap);
+        }
+    //ToDo delete ONLY users messages
+    public void deleteMsg(String key) {
+        DatabaseReference dbRefToMSG = FirebaseDatabase.getInstance().getReference("Chats").child(key);
+        //dbRefToMSG.removeValue();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("msg", "This message was deleted...");
+        dbRefToMSG.updateChildren(hashMap);
     }
-
     private String getCurrentTime(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
         String currentDateAndTime = sdf.format(new Date());

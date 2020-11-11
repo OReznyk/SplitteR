@@ -2,6 +2,7 @@ package com.splitter.Fragments;
 
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,15 +15,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.splitter.Model.ChatModel;
+import com.splitter.Model.Uploader;
 import com.splitter.R;
+
+import java.util.List;
 
 public class ChatsFragment extends Fragment {
 
-    private ChatModel mViewModel;
+    ChatModel mViewModel;
     RecyclerView recyclerView;
+    Context context;
+    List<ChatModel> chatList;
+    FirebaseUser fUser;
 
     public static ChatsFragment newInstance() {
+
         return new ChatsFragment();
     }
 
@@ -39,5 +48,6 @@ public class ChatsFragment extends Fragment {
 
         // TODO: Use the ViewModel
     }
+
 
 }

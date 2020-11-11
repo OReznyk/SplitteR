@@ -1,12 +1,7 @@
-package com.splitter.Permissions;
+package com.splitter.Activities;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 public class AndroidPermissions {
     private String cameraPermissions[];

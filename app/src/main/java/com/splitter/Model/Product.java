@@ -1,39 +1,73 @@
 package com.splitter.Model;
 
-import android.net.Uri;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class Product {
-    private Uri img;
-    private String name;
-    private double quantity, priceTotal;
+    private String id, img;
+    private String name, buyer;
+    private double price;
+    DatabaseReference dbRef;
+    FirebaseDatabase fDb;
 
 
     public Product() {
-    }
-    public Product(String name, double quantity, double priceTotal) {
-        this.img = null;
-        this.name = name;
-        this.quantity = quantity;
-        this.priceTotal = priceTotal;
+        dbRef = fDb.getReference("Products");
+        DatabaseReference newProductID = dbRef.push();
+        this.id = newProductID.toString();
+        this.img = "";
+        this.name = "";
+        this.buyer = "";
+        this.price = 0.0;
     }
 
-    public Product(Uri img, String name, double quantity, double priceTotal) {
+    public Product(String name,double price) {
+        dbRef = fDb.getReference("Products");
+        DatabaseReference newProductID = dbRef.push();
+        this.id = newProductID.toString();
+        this.img = "";
+        this.name = name;
+        this.price = price;
+        this.buyer = "";
+
+    }
+
+    public Product(String id, String img, String name, String buyer, double price) {
+        this.id = id;
         this.img = img;
         this.name = name;
-        this.quantity = quantity;
-        this.priceTotal = priceTotal;
+        this.buyer = buyer;
+        this.price = price;
     }
 
-    public double averagePrice(){
-        double averagePrice = priceTotal / quantity;
-        return averagePrice;
+    public void delete(){
+        DatabaseReference dbRefToProduct = FirebaseDatabase.getInstance().getReference("Products").child(id);
+       dbRefToProduct.removeValue();
     }
 
-    public Uri getImg() {
+    public String getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(String buyer) {
+        this.buyer = buyer;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getImg() {
         return img;
     }
 
-    public void setImg(Uri img) {
+    public void setImg(String img) {
         this.img = img;
     }
 
@@ -45,19 +79,11 @@ public class Product {
         this.name = name;
     }
 
-    public double getQuantity() {
-        return quantity;
+    public double getPrice() {
+        return price;
     }
 
-    public void setQuantity(double quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getPriceTotal() {
-        return priceTotal;
-    }
-
-    public void setPriceTotal(double priceTotal) {
-        this.priceTotal = priceTotal;
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

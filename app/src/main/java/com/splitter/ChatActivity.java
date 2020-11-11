@@ -10,7 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,6 +53,8 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseUser fUser;
     FirebaseDatabase fDb;
     DatabaseReference dbRef;
+    DatabaseReference refForSeen;
+    ValueEventListener seenListener;
 
     String otherID, userId;
 
@@ -70,8 +74,6 @@ public class ChatActivity extends AppCompatActivity {
         fDb = FirebaseDatabase.getInstance();
         dbRef =fDb.getReference("Users");
         getAndSetFriendsData();
-        readMessage();
-
         //handle send message btn clicked
         sendMsgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,14 +89,33 @@ public class ChatActivity extends AppCompatActivity {
 
                     readMessage();
                     //ToDo solve seen problem
-                    uploader.seenMessage(msg, userId, otherID);
-
-
+                   seenMessage();
                 }else{}
             }
         });
-    }
+        msgIv.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().trim().length() == 0){
+                    checkTypingStatus("noOne");
+                }
+                else {
+                    checkTypingStatus(otherID);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        readMessage();
+        seenMessage();
+    }
 
     //from https://www.geeksforgeeks.org/how-to-programmatically-hide-android-soft-keyboard/
     private void closeKeyboard()
@@ -116,9 +137,6 @@ public class ChatActivity extends AppCompatActivity {
                             view.getWindowToken(), 0);
         }
     }
-
-
-
     private void readMessage() {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats/");
         dbRef.addValueEventListener(new ValueEventListener() {
@@ -133,7 +151,6 @@ public class ChatActivity extends AppCompatActivity {
                     }
                     chatAdapter = new ChatAdapter(ChatActivity.this, chatList);
                     chatAdapter.notifyDataSetChanged();
-
                     recyclerView.setAdapter(chatAdapter);
                 }
             }
@@ -144,8 +161,31 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+    public void seenMessage() {
+        refForSeen = FirebaseDatabase.getInstance().getReference("Chats");
+        seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    ChatModel chat = dataSnapshot.getValue(ChatModel.class);
+                    if(!chat.getMsg().equals("This message was deleted...")){
+                        if (chat.getId() == dataSnapshot.getKey()) {
+                            HashMap<String, Object> hashMap= new HashMap<>();
+                            hashMap.put("isSeen", true);
+                            dataSnapshot.getRef().updateChildren(hashMap);
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-
+            }
+        });
+    }
+    public void removeSeenListener(){
+        refForSeen.removeEventListener(seenListener);
+    }
     private void initView(){
         Toolbar toolbar = findViewById(R.id.chat_toolbar);
         toolbar.setTitle("");
@@ -176,15 +216,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    // To get & set image & name
                     String name = ""+dataSnapshot.child("name").getValue();
                     String img = ""+dataSnapshot.child("avatar").getValue();
-                    String onlineStatus = ""+ dataSnapshot.child("onlineStatus").getValue();
-                    if(onlineStatus.equals("online")){
-                        statusTv.setText(onlineStatus);
-                    }
-                    else{
-                        statusTv.setText("Last seen at: "+onlineStatus);
-                    }
                     nameTv.setText(name);
                     try {
                         Picasso.get().load(img).placeholder(R.drawable.ic_default_avatar).into(imgTv);
@@ -192,7 +226,20 @@ public class ChatActivity extends AppCompatActivity {
                     }catch (Exception e){
                         Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
                     }
-
+                    // To get & set typing/online status
+                    String typingStatus = ""+ dataSnapshot.child("typingTo").getValue();
+                    String onlineStatus = ""+ dataSnapshot.child("onlineStatus").getValue();
+                    if(typingStatus.equals(userId)){
+                        statusTv.setText("typing...");
+                    }
+                    else{
+                        if(onlineStatus.equals("online")){
+                            statusTv.setText(onlineStatus);
+                        }
+                        else{
+                            statusTv.setText("Last seen at: "+onlineStatus);
+                        }
+                    }
                 }
             }
 
@@ -204,8 +251,8 @@ public class ChatActivity extends AppCompatActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.menu_action_search).setVisible(false);
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
+        //ToDo finish menu init
         return super.onCreateOptionsMenu(menu);
     }
     @Override
@@ -224,10 +271,8 @@ public class ChatActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
         String currentDateAndTime = sdf.format(new Date());
         checkOnlineStatus(currentDateAndTime);
-        //ToDo remove isSeenListener
-        //uploader.removeSeenListener();
+        removeSeenListener();
     }
-
     @Override
     protected void onResume() {
         checkOnlineStatus("online");
@@ -249,6 +294,13 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("onlineStatus", status);
         databaseReference.updateChildren(hashMap);
     }
+    private void checkTypingStatus(String typing){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typingTo", typing);
+        databaseReference.updateChildren(hashMap);
+    }
+
     @Override
     public boolean onSupportNavigateUp(){
         onBackPressed();
