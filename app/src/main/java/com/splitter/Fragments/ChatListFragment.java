@@ -20,8 +20,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.splitter.Activities.NewGroupActivity;
-import com.splitter.Adapters.ChatListAdapter;
-import com.splitter.Model.Chat;
+import com.splitter.Adapters.FriendsListAdapter;
+import com.splitter.Model.User;
 import com.splitter.R;
 
 import java.util.ArrayList;
@@ -31,10 +31,10 @@ public class ChatListFragment extends Fragment {
     FloatingActionButton actionButton;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
-    ChatListAdapter adapter;
+    FriendsListAdapter adapter;
     DatabaseReference chatsRef, groupsRef;
     RecyclerView recyclerView;
-    List<Chat> chatsList;
+    List<User> chatsList;
     public ChatListFragment(){}
 
     @Override
@@ -43,7 +43,7 @@ public class ChatListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_chats_list, container, false);
 
-        recyclerView = view.findViewById(R.id.users_recyclerView);
+        recyclerView = view.findViewById(R.id.chat_list_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -69,12 +69,12 @@ public class ChatListFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 chatsList.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    Chat chat = snapshot.getValue(Chat.class);
+                    User user = snapshot.getValue(User.class);
 
-                    if(chat.getUsersIds().contains(fUser.getUid())){
-                        chatsList.add(chat);
-                    }
-                    adapter = new ChatListAdapter(getActivity(), chatsList);
+                    /*if(user.participantsIDs().contains(fUser.getUid())){
+                        chatsList.add(user);
+                    }*/
+                    adapter = new FriendsListAdapter(getActivity(), chatsList);
                     recyclerView.setAdapter(adapter);
                 }
 

@@ -7,15 +7,14 @@
     android:background="@color/colorBackground">
 
     <ImageView
-        android:id="@+id/groupImg"
+        android:id="@+id/group_img"
         android:layout_width="165dp"
-        android:layout_height="125dp"
-        android:layout_marginTop="36dp"
-        app:layout_constraintBottom_toTopOf="@+id/group_title"
+        android:layout_height="165dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.120000005"
         app:srcCompat="@drawable/ic_add_avatar"
         tools:srcCompat="@drawable/ic_add_avatar" />
 
@@ -23,57 +22,73 @@
         android:id="@+id/group_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Title"
         android:inputType="textPersonName"
-        android:textColorHint="@color/colorWhite"
         android:textColor="@color/colorWhite"
-        app:layout_constraintBottom_toTopOf="@+id/group_editTextTextMultiLine"
+        android:textColorHint="@color/colorWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/groupImg" />
+        app:layout_constraintTop_toBottomOf="@+id/group_img"
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
-        android:id="@+id/group_editTextTextMultiLine"
+        android:id="@+id/group_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:gravity="start|top"
         android:hint="Description"
-        android:inputType="textMultiLine"
 
+        android:inputType="textMultiLine"
         android:textColorHint="@color/colorWhite"
-        app:layout_constraintBottom_toTopOf="@+id/group_recyclerView"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_title" />
+        app:layout_constraintTop_toBottomOf="@+id/group_title"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/group_recyclerView"
-        android:layout_width="322dp"
-        android:layout_height="274dp"
+        android:id="@+id/group_participantsIv"
+        android:layout_width="353dp"
+        android:layout_height="347dp"
 
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="36dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_editTextTextMultiLine"
+        app:layout_constraintTop_toBottomOf="@+id/group_description"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="MissingConstraints" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/group_floatingActionButton"
+        android:id="@+id/group_addBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="92dp"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.926"
+        app:layout_constraintHorizontal_bias="0.895"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/group_participantsIv"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@android:drawable/star_big_on" />
+
+    <Button
+        android:id="@+id/group_saveBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/group_participantsIv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

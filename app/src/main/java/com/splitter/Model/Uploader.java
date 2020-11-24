@@ -1,25 +1,17 @@
 package com.splitter.Model;
 
-import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -89,8 +81,10 @@ public class Uploader {
     }
 
     public void sendMessage(String msg, String otherId) {
+        DatabaseReference chatRef;
         String timeStamp = getCurrentTime();
-        dbRef = fDb.getReference("Chats");
+        chatRef = fDb.getReference("Chats");
+
         HashMap<String, Object> hashMap= new HashMap<>();
         hashMap.put("sender", fUser.getUid());
         hashMap.put("receiver", otherId);
@@ -98,7 +92,7 @@ public class Uploader {
         hashMap.put("timeStamp", timeStamp);
         hashMap.put("isSeen", false);
         //To get objects id
-        DatabaseReference msgID = dbRef.push();
+        DatabaseReference msgID = chatRef.push();
         hashMap.put("id", msgID.getKey());
         msgID.setValue(hashMap);
         }
@@ -125,5 +119,6 @@ public class Uploader {
         dbRef = fDb.getReference("Users");
         storageReference = FirebaseStorage.getInstance().getReference();
     }
+
 
 }

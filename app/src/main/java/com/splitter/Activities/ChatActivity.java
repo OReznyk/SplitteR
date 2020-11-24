@@ -61,7 +61,7 @@ public class ChatActivity extends AppCompatActivity {
 
     String otherID, userId;
 
-    List<Message> chatList;
+    List<Message> messageList;
     MessageAdapter messageAdapter;
 
 
@@ -102,14 +102,15 @@ public class ChatActivity extends AppCompatActivity {
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                chatList.clear();
+                messageList.clear();
                 for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    Message chat = dataSnapshot.getValue(Message.class);
-                    if(chat.getReceiver().equals(userId) && chat.getSender().equals(otherID) ||
-                            chat.getReceiver().equals(otherID) && chat.getSender().equals(userId)){
-                        chatList.add(chat);
+                    Message msg = dataSnapshot.getValue(Message.class);
+                    // TODO change to chatID?ok
+                    if(msg.getReceiver().equals(userId) && msg.getSender().equals(otherID) ||
+                            msg.getReceiver().equals(otherID) && msg.getSender().equals(userId)){
+                        messageList.add(msg);
                     }
-                    messageAdapter = new MessageAdapter(ChatActivity.this, chatList);
+                    messageAdapter = new MessageAdapter(ChatActivity.this, messageList);
                     messageAdapter.notifyDataSetChanged();
                     recyclerView.setAdapter(messageAdapter);
                 }
@@ -166,10 +167,10 @@ public class ChatActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
 
-        chatList = new ArrayList<>();
+        messageList = new ArrayList<>();
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-        messageAdapter = new MessageAdapter(ChatActivity.this, chatList);
+        messageAdapter = new MessageAdapter(ChatActivity.this, messageList);
         recyclerView.setAdapter(messageAdapter);
         
         //handle btn clicked
@@ -196,13 +197,13 @@ public class ChatActivity extends AppCompatActivity {
                     //reset msgIv
                     msgIv.setText("");
                     closeKeyboard();
-                    readMessage();
-                    seenMessage();
                 }else{
                     Toast.makeText(ChatActivity.this, "Can`t send empty message!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        readMessage();
+        seenMessage();
         msgIv.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -235,8 +236,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getAndSetFriendsData(){
-        Query userQuery = dbRef.orderByChild("id").equalTo(otherID);
-        userQuery.addValueEventListener(new ValueEventListener() {
+        Query chatQuery = dbRef.orderByChild("id").equalTo(otherID);
+        chatQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){

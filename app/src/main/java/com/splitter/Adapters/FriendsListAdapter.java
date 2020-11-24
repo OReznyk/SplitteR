@@ -1,6 +1,7 @@
 package com.splitter.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,18 +11,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.splitter.Model.Chat;
+import com.splitter.Activities.ChatActivity;
+import com.splitter.Model.User;
 import com.splitter.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHolder> {
+public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.MyHolder> {
     Context context;
-    List<Chat> chatsList;
+    List<User> friendsList;
 
-    public ChatListAdapter(Context context, List<Chat> chatsList) {
+    public FriendsListAdapter(Context context, List<User> friendsList) {
         this.context = context;
-        this.chatsList = chatsList;
+        this.friendsList = friendsList;
     }
 
     class MyHolder extends RecyclerView.ViewHolder {
@@ -38,7 +41,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
 
     @NonNull
     @Override
-    public ChatListAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FriendsListAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_row_user, parent, false);
         return new MyHolder(view);
     }
@@ -46,13 +49,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         //get data
-        /*final String friendsId = chatsList.get(position).getId();
-        String userImage = chatsList.get(position).getAvatar();
-        String userName = chatsList.get(position).getName();
-        //String userEmail = chatsList.get(position).getEmail();
+        final String friendsId = friendsList.get(position).getId();
+        String userImage = friendsList.get(position).getAvatar();
+        String userName = friendsList.get(position).getName();
+        String userEmail = friendsList.get(position).getEmail();
         //set data
         holder.mNameTv.setText(userName);
-        //holder.mEmailTv.setText(userEmail);
+        holder.mEmailTv.setText(userEmail);
         try {
             Picasso.get().load(userImage)
                     .placeholder(R.drawable.ic_default_avatar)
@@ -68,12 +71,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
                 intent.putExtra("friendsID", friendsId);
                 context.startActivity(intent);
             }
-        });*/
+        });
 
     }
 
     @Override public int getItemCount() {
-        return chatsList.size();
+        return friendsList.size();
     }
 
 }
