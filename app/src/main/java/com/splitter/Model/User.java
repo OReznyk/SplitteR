@@ -5,21 +5,27 @@ public class User {
     private String name;
     private String phone;
     private String email;
-    private String image;
+    private String avatar;
     private  String cover;
+    private String typingTo;
+    private String onlineStatus;
 
     public User(){}
 
-    public User(String id, String name, String phone, String email, String image, String
-            cover){
+    public User(String id, String name, String phone, String email, String avatar, String cover, String typingTo, String onlineStatus) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.image = image;
+        this.avatar = avatar;
         this.cover = cover;
+        this.typingTo = typingTo;
+        this.onlineStatus = onlineStatus;
     }
 
+    public String getId() {
+        return id;
+    }
 
     public void setId(String id) {
         this.id = id;
@@ -49,22 +55,35 @@ public class User {
         this.email = email;
     }
 
-    public String getImage() {
-        return image;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getCover() {
         return cover;
     }
 
-    public void setCover(String cover) { this.image = cover; }
-
-    public String getId() {
-        return id;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
+    public String getTypingTo() {
+        return typingTo;
+    }
+
+    public void setTypingTo(String typingTo) {
+        this.typingTo = typingTo;
+    }
+
+    public String getOnlineStatus() {
+        return onlineStatus;
+    }
+
+    public void setOnlineStatus(String onlineStatus) {
+        this.onlineStatus = onlineStatus;
+    }
 }

@@ -1,7 +1,5 @@
 package com.splitter.Model;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -9,24 +7,12 @@ public class Product {
     private String id, img;
     private String name, buyer;
     private double price;
-    DatabaseReference dbRef;
-    FirebaseDatabase fDb;
 
 
     public Product() {
-        dbRef = fDb.getReference("Products");
-        DatabaseReference newProductID = dbRef.push();
-        this.id = newProductID.toString();
-        this.img = "";
-        this.name = "";
-        this.buyer = "";
-        this.price = 0.0;
     }
 
     public Product(String name,double price) {
-        dbRef = fDb.getReference("Products");
-        DatabaseReference newProductID = dbRef.push();
-        this.id = newProductID.toString();
         this.img = "";
         this.name = name;
         this.price = price;

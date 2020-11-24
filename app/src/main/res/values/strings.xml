@@ -11,4 +11,12 @@
     <string name="settings">Settings</string>
     <string name="deletedMsgReplacer">This message was deleted...</string>
 
+    <string name="which_basket">Which basket?</string>
+    <string-array name="send_basket_options">
+        <item>Create basket</item>
+        <item>Select basket</item>
+    </string-array>
+    <string name="TAG">TAG</string>>
+
+
 </resources>

@@ -20,10 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -65,8 +65,8 @@ public class ProfileFragment extends Fragment {
     private static final int STORAGE_REQUEST = 200;
     private static final int PICK_IMAGE_FROM_GALLERY_REQUEST = 300;
     private static final int PICK_IMAGE_FROM_CAMERA_REQUEST = 400;
-    String cameraPermissions[];
-    String storagePermissions[];
+    String[] cameraPermissions;
+    String[] storagePermissions;
     String avatarOrCover;
     Uri imgURI;
 
@@ -79,6 +79,10 @@ public class ProfileFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        return view;
+    }
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         firebaseInit();
         permissionsInit();
         avatarIv = view.findViewById(R.id.ps_avatar);
@@ -92,7 +96,7 @@ public class ProfileFragment extends Fragment {
         progressDialog = new ProgressDialog(getActivity());
 
         Query query = dbRef.orderByChild("email").equalTo(fUser.getEmail());
-        ProfileFragment profileFragment = new ProfileFragment();
+        //ProfileFragment profileFragment = new ProfileFragment();
         //ToDo settings option
         settingsIv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,9 +118,9 @@ public class ProfileFragment extends Fragment {
                     emailTv.setText(user.getEmail());
                     phoneTv.setText(user.getPhone());
                     try {
-                        Picasso.get().load(img).into(avatarIv);
+                        Picasso.get().load(img).placeholder(R.drawable.ic_default_avatar);
                     } catch (Exception e) {
-                        Picasso.get().load(R.drawable.ic_add_avatar);
+                        Picasso.get().load(R.drawable.ic_default_avatar);
                     }
                     try {
                         Picasso.get().load(cover).into(coverIv);
@@ -131,7 +135,6 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        return view;
     }
 
     //permissions block
@@ -225,7 +228,7 @@ public class ProfileFragment extends Fragment {
 
     //dialogs block
     private void showEditProfileDialog() {
-        String options[] = {"Change Profile Picture", "Change Cover Photo", "Change Name", "Change Phone"};
+        String[] options = {"Change Profile Picture", "Change Cover Photo", "Change Name", "Change Phone"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Profile Settings");
         builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -296,7 +299,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showImagePicDialog() {
-        String options[] = {"Camera", "Gallery"};
+        String[] options = {"Camera", "Gallery"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Pick Image From:");
         builder.setItems(options, (dialog, which) -> {

@@ -1,66 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent">
+    android:orientation="vertical"
+    android:background="@color/colorBackground">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="141dp"
-        android:layout_height="120dp"
+        android:id="@+id/item_imgIv"
+        android:layout_width="169dp"
+        android:layout_height="181dp"
+        android:layout_gravity="center"
         android:layout_marginTop="36dp"
-        app:layout_constraintBottom_toTopOf="@+id/products_title"
+        app:layout_constraintBottom_toTopOf="@+id/item_titleIv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_add_avatar" />
 
     <EditText
-        android:id="@+id/products_title"
+        android:id="@+id/item_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Type"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:textColorHint="@color/colorWhite"
+        app:layout_constraintHorizontal_bias="0.497" />
+
+    <EditText
+        android:id="@+id/item_titleIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
         android:textAlignment="center"
         android:textColorHint="@color/colorWhite"
-        app:layout_constraintBottom_toTopOf="@+id/products_price"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintHorizontal_bias="0.497"/>
 
     <EditText
-        android:id="@+id/products_price"
+        android:id="@+id/item_priceIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_gravity="center"
         android:ems="10"
         android:hint="Price"
         android:inputType="numberSigned"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColorHint="@color/colorWhite"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/products_title" />
+        android:layout_marginTop="16dp" />
 
-    <Button
-        android:id="@+id/button"
+    <EditText
+        android:id="@+id/item_descriptionIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="Description"
+        android:inputType="textMultiLine"
+        android:textColorHint="@color/colorWhite"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="101dp" />
+
+    <Button
+        android:id="@+id/item_saveBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginBottom="124dp"
         android:background="@color/colorPrimary"
         android:text="Save"
+        android:layout_marginTop="36dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/products_price"
-        app:layout_constraintVertical_bias="0.0" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintHorizontal_bias="0.541"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</LinearLayout>

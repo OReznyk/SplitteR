@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#CBE9CB"
-    tools:context=".Login">
+    tools:context=".Activities.LoginActivity">
 
     <TextView
         android:id="@+id/app_name"
@@ -80,7 +80,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
-        android:background="#28D491EE"
+        android:background="@color/colorAccent"
         android:gravity="center"
         android:text="@string/login"
         android:textColor="#37024E"

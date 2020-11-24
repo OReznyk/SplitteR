@@ -63,7 +63,7 @@
             android:layout_height="47dp"
             android:layout_weight="1"
             android:layout_marginTop="5dp"
-            app:srcCompat="@drawable/ic_send_delete"
+            app:srcCompat="@drawable/ic_delete"
             android:paddingRight="8dp"/>
 
     </LinearLayout>

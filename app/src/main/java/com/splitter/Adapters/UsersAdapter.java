@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.splitter.ChatActivity;
+import com.splitter.Activities.ChatActivity;
 import com.splitter.Model.User;
 import com.splitter.R;
 import com.squareup.picasso.Picasso;
@@ -27,10 +27,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
         this.userList = userList;
     }
 
-    class MyHolder extends RecyclerView.ViewHolder{
+    class MyHolder extends RecyclerView.ViewHolder {
         ImageView mAvatarIv;
         TextView mNameTv, mEmailTv;
-        public MyHolder(@NonNull View view){
+
+        public MyHolder(@NonNull View view) {
             super(view);
             mAvatarIv = view.findViewById(R.id.friend_avatarIv);
             mEmailTv = view.findViewById(R.id.friend_email);
@@ -49,17 +50,18 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
     public void onBindViewHolder(@NonNull UsersAdapter.MyHolder holder, int position) {
         //get data
         final String friendsId = userList.get(position).getId();
-        String userImage = userList.get(position).getImage();
+        String userImage = userList.get(position).getAvatar();
         String userName = userList.get(position).getName();
         String userEmail = userList.get(position).getEmail();
         //set data
         holder.mNameTv.setText(userName);
         holder.mEmailTv.setText(userEmail);
-        try{
+        try {
             Picasso.get().load(userImage)
                     .placeholder(R.drawable.ic_default_avatar)
                     .into(holder.mAvatarIv);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
 
         //handle item click
@@ -74,8 +76,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
 
     }
 
-    @Override
-    public int getItemCount() {
+    @Override public int getItemCount() {
         return userList.size();
     }
+
 }

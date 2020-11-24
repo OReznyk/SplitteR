@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,24 +18,6 @@ public class GroupModel {
     FirebaseUser fUser;
 
     public GroupModel() {
-        dbRef = fDb.getReference("Groups");
-        DatabaseReference newGroupID = dbRef.push();
-        this.groupID = newGroupID.toString();
-
-        dbRef = fDb.getReference("Chats");
-        DatabaseReference newChatID = dbRef.push();
-        this.chatID = newChatID.toString();
-
-        this.image = "";
-        this.title = "";
-        this.description = "";
-
-        fAuth = FirebaseAuth.getInstance();
-        fUser = fAuth.getCurrentUser();
-        this.adminsIDs = new ArrayList<>();
-        //set current user as admin
-        this.adminsIDs.add(fUser.getUid());
-        this.participants = new ArrayList<>();
     }
 
     public GroupModel(String groupID, String chatID, String image, String title, String description, List<String> adminsIDs, List<String> participants) {

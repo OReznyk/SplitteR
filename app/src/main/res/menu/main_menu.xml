@@ -8,10 +8,8 @@
         app:showAsAction="always"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         />
-    <item
-        android:id="@+id/menu_action_settings"
-        android:title="@string/settings" />
     <item android:id="@+id/menu_action_logout"
         android:title="@string/logout"
-        app:showAsAction="never"/>
+        app:showAsAction="never"
+        />
 </menu>

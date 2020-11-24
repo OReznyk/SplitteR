@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
-    tools:context=".ChatActivity">
+    android:background="@color/colorBackground"
+    tools:context=".Activities.ChatActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/chat_toolbar"
@@ -69,12 +68,25 @@
             android:padding="15dp"
             android:layout_weight="1"
             android:inputType="textCapSentences|textMultiLine"/>
+
+        <ImageButton
+            android:id="@+id/chat_send_basket"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:src="@drawable/ic_basket"/>
+        <ImageButton
+            android:id="@+id/chat_send_attachment"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:src="@drawable/ic_attachment"/>
         <ImageButton
             android:id="@+id/chat_send_msg_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@null"
-            android:src="@drawable/ic_send_send"/>
+            android:src="@drawable/ic_send_msg"/>
 
 
     </LinearLayout>

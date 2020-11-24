@@ -1,15 +1,14 @@
 package com.splitter.Fragments;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,13 +31,13 @@ public class UsersFragment extends Fragment {
     RecyclerView recyclerView;
     UsersAdapter adapter;
     List<User> userList;
-
+    FirebaseUser fUser;
+    DatabaseReference dbRef;
 
 
     public UsersFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,8 +57,7 @@ public class UsersFragment extends Fragment {
     }
 
     private void getAllUsers() {
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Users");
+        if(dbRef == null) initFirebase();
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -82,10 +80,9 @@ public class UsersFragment extends Fragment {
             }
         });
     }
-
+    //ToDo: use searchUsers
     public void searchUsers(String s){
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Users");
+        if(dbRef == null) initFirebase();
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -110,5 +107,9 @@ public class UsersFragment extends Fragment {
                 //TODO fill onCanceled
             }
         });
+    }
+    private void initFirebase(){
+        fUser = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference("Users");
     }
 }

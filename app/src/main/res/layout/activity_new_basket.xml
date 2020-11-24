@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <EditText
+        android:id="@+id/basket_titleIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:hint="Basket's Title"
+        android:textColor="@color/colorWhite"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.133" />
+
+    <LinearLayout
+        android:id="@+id/basket_date_time_layout"
+        android:layout_width="340dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/basket_linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/basket_titleIV">
+
+        <DatePicker
+            android:id="@+id/basket_dateIv"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner" />
+
+        <TimePicker
+            android:id="@+id/basket_timeIv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:calendarViewShown="false"
+            android:spinnersShown="true"
+            android:timePickerMode="spinner" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/basket_linearLayout"
+        android:layout_width="340dp"
+        android:layout_height="363dp"
+        android:layout_marginTop="91dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/basket_titleIV">
+
+        <SearchView
+            android:id="@+id/basket_search_product"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </SearchView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/basket_product_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/basket_addItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/basket_linearLayout"
+        app:layout_constraintEnd_toEndOf="@+id/basket_linearLayout"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/basket_date_time_layout"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_create_list" />
+
+    <Button
+        android:id="@+id/basket_saveBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="159dp"
+        android:layout_marginEnd="164dp"
+        android:layout_marginBottom="30dp"
+        android:background="@color/colorPrimary"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/basket_linearLayout"
+        app:layout_constraintVertical_bias="0.523" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

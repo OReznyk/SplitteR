@@ -11,9 +11,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.splitter.Adapters.UsersAdapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,20 +26,6 @@ public class Basket {
     FirebaseUser fUser;
 
     public Basket() {
-        dbRef = fDb.getReference("Baskets");
-        DatabaseReference newBasketID = dbRef.push();
-        this.basketID = newBasketID.toString();
-        this.title = "";
-        this.groupID = "";
-        this.expiringDate = "";
-        this.expiringTime = "";
-        this.listToBye = new HashMap<>();
-        fAuth = FirebaseAuth.getInstance();
-        fUser = fAuth.getCurrentUser();
-        this.adminsID = new ArrayList<>();
-        //set current user as admin
-        this.adminsID.add(fUser.getUid());
-        this.totalPrice = 0.0;
     }
 
     public Basket(String basketID, String groupID, String title, String expiringDate, String expiringTime, List<String> adminsID, HashMap<String, Integer> listToBye, DatabaseReference dbRef, FirebaseDatabase fDb, FirebaseAuth fAuth, FirebaseUser fUser) {
