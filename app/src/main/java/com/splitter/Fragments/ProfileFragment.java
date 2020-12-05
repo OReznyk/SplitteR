@@ -95,7 +95,7 @@ public class ProfileFragment extends Fragment {
         user.setId(fUser.getUid());
         progressDialog = new ProgressDialog(getActivity());
 
-        Query query = dbRef.orderByChild("email").equalTo(fUser.getEmail());
+        Query query = dbRef.orderByChild("id").equalTo(fUser.getUid());
         //ProfileFragment profileFragment = new ProfileFragment();
         //ToDo settings option
         settingsIv.setOnClickListener(new View.OnClickListener() {
@@ -108,22 +108,18 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    user.setName((String) ds.child("name").getValue());
-                    user.setEmail((String) ds.child("email").getValue());
-                    user.setPhone((String) ds.child("phone").getValue());
-                    String img = "" + ds.child("avatar").getValue();
-                    String cover = "" + ds.child("cover").getValue();
-                    //set data on page
+                    user = ds.getValue(User.class);
+
                     nameTv.setText(user.getName());
                     emailTv.setText(user.getEmail());
                     phoneTv.setText(user.getPhone());
                     try {
-                        Picasso.get().load(img).placeholder(R.drawable.ic_default_avatar);
+                        Picasso.get().load(user.getAvatar()).placeholder(R.drawable.ic_default_avatar);
                     } catch (Exception e) {
                         Picasso.get().load(R.drawable.ic_default_avatar);
                     }
                     try {
-                        Picasso.get().load(cover).into(coverIv);
+                        Picasso.get().load(user.getCover()).into(coverIv);
                     } catch (Exception e) {
                     }
                 }
@@ -224,7 +220,6 @@ public class ProfileFragment extends Fragment {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
 
     //dialogs block
     private void showEditProfileDialog() {

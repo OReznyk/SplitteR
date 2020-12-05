@@ -24,9 +24,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.splitter.Model.User;
 import com.splitter.R;
-
-import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "TAG";
@@ -76,7 +75,6 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
                 registrationToFirebase(email, pwd, name, phone);
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         });
 
@@ -105,11 +103,10 @@ public class RegisterActivity extends AppCompatActivity {
                     // email verification by link
                     mRegProgBar.setVisibility(View.INVISIBLE);
                     FirebaseUser user = fAuth.getCurrentUser();
-                    String uid = user.getUid();
+                    storeUserData(user.getUid(), name, email, phone);
                     user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            storeUserData(uid, name, email, phone);
                             Toast.makeText(RegisterActivity.this, "Verification email was sent ", Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -132,24 +129,19 @@ public class RegisterActivity extends AppCompatActivity {
     private void storeUserData(String uid, String name, String email, String phone){
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("Users");
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("id", uid);
-        hashMap.put("name", name);
-        hashMap.put("onlineStatus", "online");
-        hashMap.put("typingTo", "noOne");
-        hashMap.put("email", email);
-        hashMap.put("phone", phone);
-        hashMap.put("image", "");
-        hashMap.put("cover", "");
-        dbRef.child(uid).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+        User user = new User(uid, name, phone, email, "", "", "noOne", "online");
+        dbRef.child(uid).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Toast.makeText(RegisterActivity.this,"Data saved", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Success: User Profile is created for "+ uid);
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 //to log failure
+                Toast.makeText(RegisterActivity.this,"Data not saved", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "User Profile is failed to be created for "+ uid + " "+ e.getMessage());
             }
         });

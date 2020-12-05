@@ -44,8 +44,8 @@ public class Uploader {
 
     public boolean uploadPhoto(Uri uri, String nameOfImg) {
         String filePathAndName = imagesPath + "" + fUser.getUid() + "_" + nameOfImg;
-        StorageReference storgRef = storageReference.child(filePathAndName);
-        storgRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        StorageReference sReference = storageReference.child(filePathAndName);
+        sReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();

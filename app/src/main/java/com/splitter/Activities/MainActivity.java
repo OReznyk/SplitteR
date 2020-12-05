@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user  = snapshot.getValue(User.class);
-                //Toast.makeText(MainActivity.this, "HI, "+user.getName(), Toast.LENGTH_SHORT).show();
             }
             //ToDo: handle db error
             @Override
@@ -142,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_action_logout:
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 return true;
             default:

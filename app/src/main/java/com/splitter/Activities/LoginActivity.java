@@ -22,7 +22,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.splitter.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -65,7 +64,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onStart(){
-        checkUserStatus();
 
         mEmail = findViewById(R.id.email);
         mPwd = findViewById(R.id.pwd);
@@ -151,11 +149,4 @@ public class LoginActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    private void checkUserStatus(){
-        FirebaseUser fUser = fAuth.getCurrentUser();
-        if(fUser != null){
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-    }
 }
