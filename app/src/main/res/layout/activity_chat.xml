@@ -12,17 +12,18 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
         <ImageView
             android:id="@+id/chat_avatar"
             android:layout_width="35dp"
             android:layout_height="35dp"
+            android:contentDescription="@string/chat_avatar"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_default_avatar"/>
+            android:src="@drawable/ic_default_avatar" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:layout_marginLeft="30dp"
             android:orientation="vertical"
             android:gravity="center">
 
@@ -30,7 +31,7 @@
                 android:id="@+id/chat_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Chat's name"
+                android:hint="@string/chat_s_name"
                 android:textColor="@color/colorWhite"
                 android:textSize="20sp"/>
             <TextView
@@ -64,29 +65,33 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:hint="Enter a massage"
+            android:hint="@string/enter_a_massage"
             android:padding="15dp"
             android:layout_weight="1"
-            android:inputType="textCapSentences|textMultiLine"/>
+            android:inputType="textCapSentences|textMultiLine"
+            android:autofillHints="" />
 
         <ImageButton
             android:id="@+id/chat_send_basket"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@null"
-            android:src="@drawable/ic_basket"/>
+            android:contentDescription="@string/basket"
+            android:src="@drawable/ic_basket" />
         <ImageButton
             android:id="@+id/chat_send_attachment"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@null"
-            android:src="@drawable/ic_attachment"/>
+            android:src="@drawable/ic_attachment"
+            android:contentDescription="@string/todo" />
         <ImageButton
             android:id="@+id/chat_send_msg_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@null"
-            android:src="@drawable/ic_send_msg"/>
+            android:src="@drawable/ic_send_msg"
+            android:contentDescription="@string/todo" />
 
 
     </LinearLayout>

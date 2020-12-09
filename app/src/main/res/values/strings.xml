@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">SplitteR</string>
+    <string name="name">Name</string>
     <string name="password">Password</string>
-    <string name="register_here">Register Here</string>
+    <string name="register">Register</string>
+    <string name="phone">Phone</string>
+    <string name="search">Search</string>
+    <string name="create_new_account">Create New Account</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="login">Login</string>
     <string name="email">Email</string>
@@ -16,7 +20,12 @@
         <item>Create basket</item>
         <item>Select basket</item>
     </string-array>
-    <string name="TAG">TAG</string>>
+    <string name="TAG">TAG</string>
+    <string name="chat_s_name">Chat title</string>
+    <string name="enter_a_massage">Enter a massage</string>
+    <string name="chat_avatar">chat_avatar</string>
+    <string name="basket">basket</string>
+    <string name="todo">TODO</string>>
 
 
 </resources>

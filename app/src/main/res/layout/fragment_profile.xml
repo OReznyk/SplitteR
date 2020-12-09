@@ -35,14 +35,13 @@
                 android:layout_width="125dp"
                 android:layout_height="125dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
                 android:background="@color/colorPrimaryDark"
                 android:padding="5dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_add_avatar" />
 
             <LinearLayout
-                android:layout_width="179dp"
+                android:layout_width="165dp"
                 android:layout_height="123dp"
                 android:orientation="vertical">
 
@@ -51,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:hint="Name"
+                    android:hint="@string/name"
                     android:textColor="@color/colorWhite"
                     android:textSize="36sp"
                     app:fontFamily="@font/unkempt" />
@@ -61,7 +60,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:hint="Email"
+                    android:hint="@string/email"
                     android:textColor="@color/colorWhite"
                     android:textSize="24sp"
                     app:fontFamily="@font/unkempt" />
@@ -71,7 +70,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:hint="Phone"
+                    android:hint="@string/phone"
                     android:textColor="@color/colorWhite"
                     android:textSize="24sp"
                     app:fontFamily="@font/unkempt" />
@@ -84,7 +83,6 @@
                 android:layout_height="70dp"
                 android:layout_gravity="center_vertical"
                 android:padding="5dp"
-                android:paddingRight="20dp"
                 android:src="@drawable/ic_settings" />
 
         </LinearLayout>

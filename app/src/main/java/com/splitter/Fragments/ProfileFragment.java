@@ -109,7 +109,7 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     user = ds.getValue(User.class);
-
+                    //update view
                     nameTv.setText(user.getName());
                     emailTv.setText(user.getEmail());
                     phoneTv.setText(user.getPhone());
