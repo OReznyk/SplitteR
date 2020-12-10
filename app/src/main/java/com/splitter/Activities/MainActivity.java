@@ -140,7 +140,9 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_action_logout:
+                setOnlineStatus("offline");
                 FirebaseAuth.getInstance().signOut();
+
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 return true;
@@ -157,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause(){
+        setOnlineStatus("offline");
         super.onPause();
     }
     @Override
@@ -164,7 +167,11 @@ public class MainActivity extends AppCompatActivity {
         setOnlineStatus("online");
         super.onResume();
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        setOnlineStatus("offline");
+    }
     private void checkUserStatus(){
         if(fUser == null){
             startActivity(new Intent(this, LoginActivity.class));
