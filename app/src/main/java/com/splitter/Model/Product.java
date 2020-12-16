@@ -6,21 +6,22 @@ import com.google.firebase.database.FirebaseDatabase;
 public class Product {
     private String id, img;
     private String name, buyer;
-    private double price;
+    private String price;
 
 
     public Product() {
     }
 
-    public Product(String name,double price) {
-        this.img = "";
+    public Product(String id, String img, String name, String price) {
+        this.id = id;
+        this.img = img;
         this.name = name;
         this.price = price;
         this.buyer = "";
 
     }
 
-    public Product(String id, String img, String name, String buyer, double price) {
+    public Product(String id, String img, String name, String buyer, String price) {
         this.id = id;
         this.img = img;
         this.name = name;
@@ -65,11 +66,11 @@ public class Product {
         this.name = name;
     }
 
-    public double getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 }

@@ -19,27 +19,29 @@ public class Basket {
     String basketID, groupID, title, expiringDate, expiringTime;
     Double totalPrice;
     List<String> adminsID;
-    HashMap<String, Integer> listToBye;
+    HashMap<Product, Integer> listToBye;
     DatabaseReference dbRef;
     FirebaseDatabase fDb;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
 
-    public Basket() {
+    public Basket(String basketID, String title, List<String> adminsID, HashMap<Product, Integer> listToBye) {
+        this.basketID = basketID;
+        this.title = title;
+        this.expiringDate = "";
+        this.expiringTime = "";
+        this.adminsID = adminsID;
+        this.listToBye = listToBye;
+        this.totalPrice = 0.0;
     }
 
-    public Basket(String basketID, String groupID, String title, String expiringDate, String expiringTime, List<String> adminsID, HashMap<String, Integer> listToBye, DatabaseReference dbRef, FirebaseDatabase fDb, FirebaseAuth fAuth, FirebaseUser fUser) {
+    public Basket(String basketID, String title, String expiringDate, String expiringTime, List<String> adminsID, HashMap<Product, Integer> listToBye) {
         this.basketID = basketID;
-        this.groupID = groupID;
         this.title = title;
         this.expiringDate = expiringDate;
         this.expiringTime = expiringTime;
         this.adminsID = adminsID;
         this.listToBye = listToBye;
-        this.dbRef = dbRef;
-        this.fDb = fDb;
-        this.fAuth = fAuth;
-        this.fUser = fUser;
         this.totalPrice = 0.0;
     }
 
@@ -60,12 +62,12 @@ public class Basket {
         }
     }
 
-    public void addProduct(String productID, int quantity){
+    public void addProduct(Product product, int quantity){
         fAuth = FirebaseAuth.getInstance();
         fUser = fAuth.getCurrentUser();
         if(adminsID.contains(fUser.getUid())){
             DatabaseReference dbRefToGroup = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID);
-            listToBye.put(productID, quantity);
+            listToBye.put(product, quantity);
             HashMap<String, Object> hashMap= new HashMap<>();
             hashMap.put("listToBye", listToBye);
             dbRefToGroup.setValue(hashMap);
@@ -83,7 +85,7 @@ public class Basket {
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Product product = snapshot.getValue(Product.class);
                     if(listToBye.containsKey(product.getId())){
-                        totalPrice += product.getPrice() * listToBye.get(product.getId());
+                        //ToDo: totalPrice += product.getPrice() * listToBye.get(product.getId());
                     }
                 }
 
@@ -101,13 +103,13 @@ public class Basket {
         getTotPrice();
         return totalPrice;
     }
-    public void changeProductQuantity(String productID, int quantity){
+    public void changeProductQuantity(Product product, int quantity){
         fAuth = FirebaseAuth.getInstance();
         fUser = fAuth.getCurrentUser();
         if(adminsID.contains(fUser.getUid())){
             DatabaseReference dbRefToGroup = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                listToBye.replace(productID, quantity);
+                listToBye.replace(product, quantity);
             }
             HashMap<String, Object> hashMap= new HashMap<>();
             hashMap.put("listToBye", listToBye);
@@ -163,11 +165,11 @@ public class Basket {
         this.expiringTime = expiringTime;
     }
 
-    public HashMap<String, Integer> getListToBye() {
+    public HashMap<Product, Integer> getListToBye() {
         return listToBye;
     }
 
-    public void setListToBye(HashMap<String, Integer> listToBye) {
+    public void setListToBye(HashMap<Product, Integer> listToBye) {
         this.listToBye = listToBye;
     }
 }

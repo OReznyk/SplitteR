@@ -177,7 +177,9 @@ public class ChatActivity extends AppCompatActivity {
         sendBasketBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
+                Intent i =new Intent(ChatActivity.this,NewBasketActivity.class);
+                startActivity(i);
+                //ToDo: add basket to view
             }
         });
         sendAttachmentBtn.setOnClickListener(new View.OnClickListener() {

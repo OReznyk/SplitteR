@@ -41,13 +41,13 @@ public class ChatListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_chats_list, container, false);
+        View view =  inflater.inflate(R.layout.fragment_list, container, false);
 
-        recyclerView = view.findViewById(R.id.chat_list_recyclerView);
+        recyclerView = view.findViewById(R.id.list_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        actionButton = view.findViewById(R.id.chats_floatingActionButton);
+        actionButton = view.findViewById(R.id.floatingActionButton);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

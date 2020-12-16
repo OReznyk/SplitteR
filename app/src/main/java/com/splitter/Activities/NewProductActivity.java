@@ -1,6 +1,5 @@
 package com.splitter.Activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,13 +14,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.splitter.Model.Product;
 import com.splitter.R;
-
-import java.util.HashMap;
 
 public class NewProductActivity extends AppCompatActivity {
     private static final String TAG = "TAG";
-    EditText type, title, price, description;
+    EditText type, title, price;
     Button saveBtn;
     ImageView img;
 
@@ -39,7 +37,6 @@ public class NewProductActivity extends AppCompatActivity {
         type = findViewById(R.id.item_type);
         title = findViewById(R.id.item_titleIv);
         price = findViewById(R.id.item_priceIv);
-        description = findViewById(R.id.item_descriptionIv);
         saveBtn = findViewById(R.id.item_saveBtn);
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -50,7 +47,6 @@ public class NewProductActivity extends AppCompatActivity {
                 final String pType = type.getText().toString();
                 final String pTitle = title.getText().toString();
                 String pPrice = price.getText().toString();
-                final String pDescription = description.getText().toString();
                 //ToDo: check type with regex! only chars allowed
                 if (TextUtils.isEmpty(pType)) {
                     type.setError("Type of item is Required in one word");
@@ -67,26 +63,21 @@ public class NewProductActivity extends AppCompatActivity {
                     pPrice = "0";
                     return;
                 }
-                saveProductToFirebase(pImg, pType, pTitle, pPrice, pDescription);
+                saveProductToFirebase(pImg, pType, pTitle, pPrice);
+
                 //Important: You can change this to create products from other activities besides Basket
-                startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
+                //startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
             }
         });
     }
 
-    private void saveProductToFirebase(String img, String pType, String pTitle, String pPrice, String pDescription) {
+    private void saveProductToFirebase(String img, String pType, String pTitle, String pPrice) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data?
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("ItemsByTypes" + pType);
         DatabaseReference newItemID = dbRef.push();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("id", newItemID.toString());
-        hashMap.put("name", title);
-        hashMap.put("price", price);
-        hashMap.put("description", "noOne");
-        hashMap.put("img", img);
-        hashMap.put("buyer", "");
-        newItemID.setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+        Product product = new Product(newItemID.toString(), img, pTitle, pPrice);
+        newItemID.setValue(product).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
             }

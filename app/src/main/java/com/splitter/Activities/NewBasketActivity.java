@@ -17,12 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.splitter.Model.Basket;
 import com.splitter.Model.Product;
 import com.splitter.R;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,7 +35,9 @@ public class NewBasketActivity  extends AppCompatActivity {
     TimePicker time;
     Button saveBtn;
     FloatingActionButton addItemBtn;
-    List<Product> items;
+    HashMap<Product , Integer> items;
+    List<String> adminsID;
+    //ToDo work on search view
     SearchView searchView;
     RecyclerView recyclerView;
     @Override
@@ -43,17 +47,20 @@ public class NewBasketActivity  extends AppCompatActivity {
         initView();
     }
     private void initView() {
-        items = new ArrayList();
+        items = new HashMap<>();
         title = findViewById(R.id.basket_titleIV);
-        date = findViewById(R.id.basket_dateIv);
-        time = findViewById(R.id.basket_timeIv);
+        /*date = findViewById(R.id.basket_dateIv);
+        time = findViewById(R.id.basket_timeIv);*/
         saveBtn = findViewById(R.id.basket_saveBtn);
         addItemBtn = findViewById(R.id.basket_addItem);
+        recyclerView = findViewById(R.id.basket_recyclerView);
 
         addItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), NewProductActivity.class));
+                Intent i = new Intent(NewBasketActivity.this, NewProductActivity.class);
+                startActivity(i);
+                //ToDo:add item to HashMap
             }
         });
 
@@ -62,31 +69,30 @@ public class NewBasketActivity  extends AppCompatActivity {
             public void onClick(View v) {
                 final String bTitle = title.getText().toString();
                 //ToDo: get date and time
-                String bDateTime = date + " " + time;
+                //String bDateTime = date + " " + time;
                 //ToDo: check date and time to be future
                 if (TextUtils.isEmpty(bTitle)) {
                     title.setError("Title is Required");
                     title.setFocusable(true);
                     return;
                 }
-                saveBasketToFirebase(bTitle, bDateTime, items);
-                //Important: You can change this to create products from other activities besides Basket
-                startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
+                saveBasketToFirebase(bTitle, items);
+                finish();
+                //Important: You can change this to create products from other activities besides Basket startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
             }
         });
     }
     //ToDo:finish it
-    private void saveBasketToFirebase(String bTitle, String bDateTime, List<Product> items) {
+    private void saveBasketToFirebase(String bTitle, HashMap<Product, Integer> items) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data?
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser fUser = firebaseAuth.getCurrentUser();
         DatabaseReference dbRef = fDb.getReference("Baskets" );
         DatabaseReference newID = dbRef.push();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("id", newID.toString());
-        hashMap.put("title", title);
-        hashMap.put("date", date);
-        hashMap.put("time", time);
-        newID.setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+        adminsID.add(fUser.getUid());
+        Basket basket = new Basket(newID.toString(), bTitle, adminsID, items);
+        newID.setValue(basket).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
             }

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 public class UsersFragment extends Fragment {
     RecyclerView recyclerView;
+    FloatingActionButton floatingActionButton;
     UsersAdapter adapter;
     List<User> userList;
     FirebaseUser fUser;
@@ -43,8 +45,10 @@ public class UsersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_users, container, false);
-        recyclerView = view.findViewById(R.id.users_recyclerView);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
+        floatingActionButton = view.findViewById(R.id.floatingActionButton);
+        floatingActionButton.hide();
+        recyclerView = view.findViewById(R.id.list_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         
