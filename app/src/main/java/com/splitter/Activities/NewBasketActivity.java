@@ -9,6 +9,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,7 +60,7 @@ public class NewBasketActivity  extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(NewBasketActivity.this, NewProductActivity.class);
-                startActivity(i);
+                startActivityForResult(i, 1);
                 //ToDo:add item to HashMap
             }
         });
@@ -104,6 +105,19 @@ public class NewBasketActivity  extends AppCompatActivity {
             }
         });
     }
-
+    //To get item
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                String itemID = data.getStringExtra("item");
+                //ToDo: find item in dataBase and put it to recyclerView + get numOfItems to buy
+            }
+            else{
+                Toast.makeText(NewBasketActivity.this,"Item not saved. Please try again", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
 }

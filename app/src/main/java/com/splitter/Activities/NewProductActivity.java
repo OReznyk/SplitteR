@@ -1,7 +1,9 @@
 package com.splitter.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,9 +66,6 @@ public class NewProductActivity extends AppCompatActivity {
                     return;
                 }
                 saveProductToFirebase(pImg, pType, pTitle, pPrice);
-
-                //Important: You can change this to create products from other activities besides Basket
-                //startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
             }
         });
     }
@@ -74,18 +73,23 @@ public class NewProductActivity extends AppCompatActivity {
     private void saveProductToFirebase(String img, String pType, String pTitle, String pPrice) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data?
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = fDb.getReference("ItemsByTypes" + pType);
+        DatabaseReference dbRef = fDb.getReference("ItemsByTypes/" + pType);
         DatabaseReference newItemID = dbRef.push();
         Product product = new Product(newItemID.toString(), img, pTitle, pPrice);
         newItemID.setValue(product).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("item", product.getId());
+                setResult(RESULT_OK, resultIntent);
+                finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 //to log failure
-                //Log.d(TAG, "Item is not created for "+ "id "+ e.getMessage());
+                Log.d(TAG, "Item is not created for "+ "id "+ e.getMessage());
+                setResult(RESULT_CANCELED);
             }
         });
     }
