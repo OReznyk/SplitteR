@@ -1,5 +1,6 @@
 package com.splitter.Model;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -8,8 +9,6 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -26,38 +25,31 @@ import static android.content.ContentValues.TAG;
 */
 public class Uploader {
     //firebase
-    FirebaseAuth fAuth;
-    FirebaseUser fUser;
-    FirebaseDatabase fDb;
-    DatabaseReference dbRef;
-
+    FirebaseDatabase firebaseDatabase;
     StorageReference storageReference;
-    //storage paths
-    String imagesPath = "Users_Profile_Images/";
+    Intent intent;
 
-    private boolean uploaded = false;
+    private final boolean uploaded = false;
 
 
     public Uploader() {
         firebaseInit();
     }
 
-    public boolean uploadPhoto(Uri uri, String nameOfImg) {
-        String filePathAndName = imagesPath + "" + fUser.getUid() + "_" + nameOfImg;
-        StorageReference sReference = storageReference.child(filePathAndName);
+    public boolean uploadPhoto(Uri uri, String path, String parentId, String imageTag) {
+        DatabaseReference dbRef = firebaseDatabase.getReference("");
+        String tagPath = "images" + "/" + path + "/" + parentId + "/" + imageTag;
+        StorageReference sReference = storageReference.child(tagPath);
         sReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
                 while (!uriTask.isSuccessful()) ;
-                Uri downloadUri = uriTask.getResult();
                 if (uriTask.isSuccessful()) {
                     HashMap<String, Object> results = new HashMap<>();
-                    results.put(nameOfImg, downloadUri.toString());
-                    dbRef.child(fUser.getUid()).updateChildren(results).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    dbRef.child(parentId).updateChildren(results).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            uploaded = true;
                             Log.d(TAG, "Success: image uploaded ");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -73,28 +65,18 @@ public class Uploader {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
                 Log.d(TAG, "Failure: uriTask not successful " + e.getMessage());
             }
         });
         return uploaded;
     }
 
-    public void sendMessage(String msg, String otherId) {
-        DatabaseReference chatRef;
+    public void sendMessage(String msg, String thisUserID, String otherId) {
         String timeStamp = getCurrentTime();
-        chatRef = fDb.getReference("Chats");
-
-        HashMap<String, Object> hashMap= new HashMap<>();
-        hashMap.put("sender", fUser.getUid());
-        hashMap.put("receiver", otherId);
-        hashMap.put("msg", msg);
-        hashMap.put("timeStamp", timeStamp);
-        hashMap.put("isSeen", false);
-        //To get objects id
-        DatabaseReference msgID = chatRef.push();
-        hashMap.put("id", msgID.getKey());
-        msgID.setValue(hashMap);
+        DatabaseReference reference = firebaseDatabase.getReference("Chats");
+        reference.push();
+        Message m = new Message(reference.getKey(), msg, otherId, thisUserID, timeStamp, false);
+        reference.setValue(m);
         }
     //ToDo delete ONLY users messages
     public void deleteMsg(String key) {
@@ -113,10 +95,7 @@ public class Uploader {
 
     //init block
     private void firebaseInit(){
-        fAuth = FirebaseAuth.getInstance();
-        fUser = fAuth.getCurrentUser();
-        fDb = FirebaseDatabase.getInstance();
-        dbRef = fDb.getReference("Users");
+        firebaseDatabase = FirebaseDatabase.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
     }
 

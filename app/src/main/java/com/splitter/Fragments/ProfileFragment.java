@@ -83,8 +83,7 @@ public class ProfileFragment extends Fragment {
         user.setId(fUser.getUid());
         progressDialog = new ProgressDialog(getActivity());
 
-        Query query = dbRef.orderByChild("id").equalTo(fUser.getUid());
-        //ProfileFragment profileFragment = new ProfileFragment();
+        Query query = dbRef.orderByChild("id").equalTo(user.getId());
         //ToDo settings option
         settingsIv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +101,7 @@ public class ProfileFragment extends Fragment {
                     emailTv.setText(user.getEmail());
                     phoneTv.setText(user.getPhone());
                     try {
-                        Picasso.get().load(user.getAvatar()).placeholder(R.drawable.ic_default_avatar);
+                        Picasso.get().load(user.getAvatar()).placeholder(R.drawable.ic_default_avatar).into(avatarIv);
                     } catch (Exception e) {
                         Picasso.get().load(R.drawable.ic_default_avatar);
                     }
@@ -127,12 +126,17 @@ public class ProfileFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 imgURI = Uri.parse(data.getStringExtra("uriAsString"));
                 Uploader uploader = new Uploader();
-                uploader.uploadPhoto(imgURI, avatarOrCover);
+                uploader.uploadPhoto(imgURI, "profile", user.getId(), avatarOrCover);
+                updateUserData(avatarOrCover, imgURI.toString());
             }
             //TODO get result not ok
         }
-
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void showImagePicDialog() {
+        Intent i = new Intent(getActivity(), ImagePicker.class);
+        startActivityForResult(i, 1);
     }
 
     //dialogs block
@@ -179,20 +183,7 @@ public class ProfileFragment extends Fragment {
                 String value = editText.getText().toString().trim();
                 if (!TextUtils.isEmpty(value)) {
                     progressDialog.show();
-                    HashMap<String, Object> result = new HashMap<>();
-                    result.put(key, value);
-                    System.out.println("RESULT " + result.toString());
-                    dbRef.child(user.getId()).updateChildren(result).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            progressDialog.dismiss();
-                            Toast.makeText(getActivity(), "Updated...", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(e -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    });
+                    updateUserData(key, value);
                 } else {
                     Toast.makeText(getActivity(), "Please enter " + key, Toast.LENGTH_SHORT).show();
                 }
@@ -207,10 +198,22 @@ public class ProfileFragment extends Fragment {
         builder.create().show();
     }
 
-    private void showImagePicDialog() {
-        Intent i = new Intent(getActivity(), ImagePicker.class);
-        startActivityForResult(i, 1);
+    private void updateUserData(String key, String value){
+        HashMap<String, Object> result = new HashMap<>();
+        result.put(key, value);
+        dbRef.child(user.getId()).updateChildren(result).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                progressDialog.dismiss();
+                Toast.makeText(getActivity(), "Updated...", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            progressDialog.dismiss();
+            Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+        });
     }
+
 
     //init block
     private void firebaseInit() {

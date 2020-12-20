@@ -1,24 +1,18 @@
 package com.splitter.Model;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 public class Message {
-    String id, msg, receiver, sender, timeStamp, typingTo;
+    String id, msg, receiver, sender, timeStamp;
     boolean isSeen;
-    DatabaseReference dbRef;
-    FirebaseDatabase fDb;
 
     public Message() {
     }
 
-    public Message(String id, String msg, String receiver, String sender, String timeStamp, String typingTo, boolean isSeen) {
+    public Message(String id, String msg, String receiver, String sender, String timeStamp, boolean isSeen) {
         this.id = id;
         this.msg = msg;
         this.receiver = receiver;
         this.sender = sender;
         this.timeStamp = timeStamp;
-        this.typingTo = typingTo;
         this.isSeen = isSeen;
     }
 
@@ -30,13 +24,6 @@ public class Message {
         this.id = id;
     }
 
-    public String getTypingTo() {
-        return typingTo;
-    }
-
-    public void setTypingTo(String typingTo) {
-        this.typingTo = typingTo;
-    }
 
     public String getMsg() {
         return msg;

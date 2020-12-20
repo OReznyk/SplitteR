@@ -117,8 +117,10 @@ public class ImagePicker extends AppCompatActivity {
                 imgURI = data.getData();
             }
             resultIntent.putExtra("uriAsString", imgURI.toString());
-            //To parse it back from string: Uri uri = Uri.parse(extras.getString"uriAsString")
             setResult(RESULT_OK, resultIntent);
+        }
+        if(resultCode == RESULT_CANCELED){
+            setResult(RESULT_CANCELED);
         }
         super.onActivityResult(requestCode, resultCode, data);
         finish();

@@ -195,7 +195,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(msg)){
                     //send msg
                     uploader = new Uploader();
-                    uploader.sendMessage(msg, otherID);
+                    uploader.sendMessage(msg, userId, otherID);
                     //reset msgIv
                     msgIv.setText("");
                     closeKeyboard();
