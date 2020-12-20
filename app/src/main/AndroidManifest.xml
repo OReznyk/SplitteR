@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activities.ImagePicker"></activity>
         <activity android:name=".Activities.NewProductActivity"></activity>
         <activity android:name=".Activities.NewBasketActivity"></activity>
         <activity android:name=".Activities.NewGroupActivity" />
