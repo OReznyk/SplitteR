@@ -1,8 +1,6 @@
 package com.splitter.Activities;
 
-import android.Manifest;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,25 +16,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.splitter.Model.Group;
-import com.splitter.Model.User;
+import com.splitter.Model.Chat;
 import com.splitter.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewGroupActivity  extends AppCompatActivity {
-    // permissions code
-    private static final int CAMERA_REQUEST = 100;
-    private static final int STORAGE_REQUEST = 200;
-    private static final int PICK_IMAGE_FROM_GALLERY_REQUEST = 300;
-    private static final int PICK_IMAGE_FROM_CAMERA_REQUEST = 400;
-    String[] cameraPermissions;
-    String[] storagePermissions;
-
-    private final Uri imgURI = null;
 
     private static final String TAG = "TAG";
     private ImageView groupImg;
@@ -49,17 +39,16 @@ public class NewGroupActivity  extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
-
         groupImg = findViewById(R.id.group_img);
         title = findViewById(R.id.group_title);
         participantsView = findViewById(R.id.group_participantsIv);
         addParticipantBtn = findViewById(R.id.group_addBtn);
         saveBtn = findViewById(R.id.group_saveBtn);
-        List<User> participants = new ArrayList<>();
-
-        // init permission arrays
-        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        List<String> participants = new ArrayList<>();
+        List<String> adminIDs = new ArrayList<>();
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
+        FirebaseUser fUser = fAuth.getCurrentUser();
+        adminIDs.add(fUser.getUid());
 
         groupImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,22 +67,22 @@ public class NewGroupActivity  extends AppCompatActivity {
                     title.setFocusable(true);
                     return;
                 }
-                saveToFirebase(img, gTitle, participants);
+                saveToFirebase(img, gTitle, participants, adminIDs);
             }
         });
     }
 
-    private void saveToFirebase(String img, String gTitle, List<User>participants) {
+    private void saveToFirebase(String img, String gTitle, List<String>participants, List<String>adminIDs) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data?
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("Groups");
         DatabaseReference newID = dbRef.push();
-        Group group = new Group();
-        newID.setValue(group).addOnSuccessListener(new OnSuccessListener<Void>() {
+        Chat chat = new Chat();
+        newID.setValue(chat).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("item", group.getId());
+                resultIntent.putExtra("item", chat .getId());
                 setResult(RESULT_OK, resultIntent);
                 finish();
             }

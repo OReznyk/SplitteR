@@ -56,7 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseUser fUser;
     FirebaseDatabase fDb;
     DatabaseReference dbRef;
-    DatabaseReference refForSeen;
+    DatabaseReference chatRef;
     ValueEventListener seenListener;
 
     String otherID, userId;
@@ -98,8 +98,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
     private void readMessage() {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats/");
-        dbRef.addValueEventListener(new ValueEventListener() {
+        chatRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 messageList.clear();
@@ -123,8 +122,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
     public void seenMessage() {
-        refForSeen = FirebaseDatabase.getInstance().getReference("Chats");
-        seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
+        seenListener = dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -132,7 +130,7 @@ public class ChatActivity extends AppCompatActivity {
                     if(!chat.getMsg().equals("This message was deleted...")){
                         if (chat.getId() == dataSnapshot.getKey()) {
                             HashMap<String, Object> hashMap= new HashMap<>();
-                            hashMap.put("isSeen", true);
+                            hashMap.put("seen", true);
                             dataSnapshot.getRef().updateChildren(hashMap);
                         }
                     }
@@ -145,7 +143,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
     public void removeSeenListener(){
-        refForSeen.removeEventListener(seenListener);
+        chatRef.removeEventListener(seenListener);
     }
     private void initView(){
         // init page view
@@ -235,6 +233,7 @@ public class ChatActivity extends AppCompatActivity {
         otherID = intent.getStringExtra("friendsID");
         fDb = FirebaseDatabase.getInstance();
         dbRef =fDb.getReference("Users");
+        chatRef = fDb.getReference("Chats");
     }
 
     private void getAndSetFriendsData(){

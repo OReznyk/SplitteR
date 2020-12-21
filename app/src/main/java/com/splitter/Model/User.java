@@ -1,5 +1,8 @@
 package com.splitter.Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
     private String id;
     private String name;
@@ -9,6 +12,9 @@ public class User {
     private  String cover;
     private String typingTo;
     private String onlineStatus;
+    List<String> chatsIDs;
+    List<String>basketsIDs;
+    List<String>friendsIDs;
 
     public User(){}
 
@@ -21,6 +27,23 @@ public class User {
         this.cover = cover;
         this.typingTo = typingTo;
         this.onlineStatus = onlineStatus;
+        chatsIDs = new ArrayList<>();
+        basketsIDs = new ArrayList<>();
+        friendsIDs = new ArrayList<>();
+    }
+
+    public User(String id, String name, String phone, String email, String avatar, String cover, String typingTo, String onlineStatus, List<String> chatsIDs, List<String> basketsIDs, List<String> friendsIDs) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.avatar = avatar;
+        this.cover = cover;
+        this.typingTo = typingTo;
+        this.onlineStatus = onlineStatus;
+        this.chatsIDs = chatsIDs;
+        this.basketsIDs = basketsIDs;
+        this.friendsIDs = friendsIDs;
     }
 
     public String getId() {
@@ -85,5 +108,29 @@ public class User {
 
     public void setOnlineStatus(String onlineStatus) {
         this.onlineStatus = onlineStatus;
+    }
+
+    public List<String> getChatsIDs() {
+        return chatsIDs;
+    }
+
+    public void setChatsIDs(List<String> chatsIDs) {
+        this.chatsIDs = chatsIDs;
+    }
+
+    public List<String> getBasketsIDs() {
+        return basketsIDs;
+    }
+
+    public void setBasketsIDs(List<String> basketsIDs) {
+        this.basketsIDs = basketsIDs;
+    }
+
+    public List<String> getFriendsIDs() {
+        return friendsIDs;
+    }
+
+    public void setFriendsIDs(List<String> friendsIDs) {
+        this.friendsIDs = friendsIDs;
     }
 }

@@ -2,18 +2,18 @@ package com.splitter.Model;
 
 public class Message {
     String id, msg, receiver, sender, timeStamp;
-    boolean isSeen;
+    boolean seen;
 
     public Message() {
     }
 
-    public Message(String id, String msg, String receiver, String sender, String timeStamp, boolean isSeen) {
+    public Message(String id, String msg, String receiver, String sender, String timeStamp, boolean seen) {
         this.id = id;
         this.msg = msg;
         this.receiver = receiver;
         this.sender = sender;
         this.timeStamp = timeStamp;
-        this.isSeen = isSeen;
+        this.seen = seen;
     }
 
     public String getId() {
@@ -58,10 +58,10 @@ public class Message {
     }
 
     public boolean isSeen() {
-        return isSeen;
+        return seen;
     }
 
     public void setSeen(boolean seen) {
-        isSeen = seen;
+        this.seen = seen;
     }
 }
