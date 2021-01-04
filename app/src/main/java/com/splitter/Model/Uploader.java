@@ -15,8 +15,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
@@ -71,26 +69,7 @@ public class Uploader {
         return uploaded;
     }
 
-    public void sendMessage(String msg, String thisUserID, String otherId) {
-        String timeStamp = getCurrentTime();
-        DatabaseReference reference = firebaseDatabase.getReference("Chats");
-        reference.push();
-        Message m = new Message(reference.getKey(), msg, otherId, thisUserID, timeStamp, false);
-        reference.setValue(m);
-        }
     //ToDo delete ONLY users messages
-    public void deleteMsg(String key) {
-        DatabaseReference dbRefToMSG = FirebaseDatabase.getInstance().getReference("Chats").child(key);
-        //dbRefToMSG.removeValue();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("msg", "This message was deleted...");
-        dbRefToMSG.updateChildren(hashMap);
-    }
-    private String getCurrentTime(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
-        String currentDateAndTime = sdf.format(new Date());
-        return currentDateAndTime;
-    }
 
 
     //init block

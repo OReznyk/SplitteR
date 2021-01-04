@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.splitter.Fragments.ChatListFragment;
 import com.splitter.Fragments.ProfileFragment;
-import com.splitter.Fragments.UsersFragment;
+import com.splitter.Fragments.UsersListFragment;
 
 public class TabsAdapter extends FragmentStateAdapter {
     private final int numOfTabs;
@@ -25,7 +25,7 @@ public class TabsAdapter extends FragmentStateAdapter {
             case 1:
                 return new ProfileFragment();
             case 2:
-                return new UsersFragment();
+                return new UsersListFragment();
             default:
                 return null;
         }

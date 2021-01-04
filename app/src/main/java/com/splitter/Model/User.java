@@ -13,6 +13,7 @@ public class User {
     private String typingTo;
     private String onlineStatus;
     List<String> chatsIDs;
+    List<String>groupID;
     List<String>basketsIDs;
     List<String>friendsIDs;
 
@@ -30,6 +31,7 @@ public class User {
         chatsIDs = new ArrayList<>();
         basketsIDs = new ArrayList<>();
         friendsIDs = new ArrayList<>();
+        groupID = new ArrayList<>();
     }
 
     public User(String id, String name, String phone, String email, String avatar, String cover, String typingTo, String onlineStatus, List<String> chatsIDs, List<String> basketsIDs, List<String> friendsIDs) {
@@ -133,4 +135,14 @@ public class User {
     public void setFriendsIDs(List<String> friendsIDs) {
         this.friendsIDs = friendsIDs;
     }
+
+    public List<String> getGroupID() {
+        return groupID;
+    }
+
+    public void setGroupID(List<String> groupID) {
+        this.groupID = groupID;
+    }
+
+
 }

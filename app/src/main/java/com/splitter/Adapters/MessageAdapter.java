@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.splitter.Model.Message;
 import com.splitter.Model.Uploader;
 import com.splitter.R;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder>{
@@ -74,8 +77,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
                 // delete message
                 public void onClick(DialogInterface dialog, int which) {
                     String msgID = chatList.get(position).getId();
-                    uploader = new Uploader();
-                    uploader.deleteMsg(msgID);
+                    deleteMsg(msgID);
                 }
             });
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -86,6 +88,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
             });
             builder.create().show();
         });
+    }
+    public void deleteMsg(String key) {
+        DatabaseReference dbRefToMSG = FirebaseDatabase.getInstance().getReference("Chats").child(key);
+        //dbRefToMSG.removeValue();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("msg", "This message was deleted...");
+        dbRefToMSG.updateChildren(hashMap);
     }
 
     @Override

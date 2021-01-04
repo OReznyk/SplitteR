@@ -1,15 +1,11 @@
 package com.splitter.Activities;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -19,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,7 +30,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.splitter.Adapters.MessageAdapter;
 import com.splitter.Model.Message;
-import com.splitter.Model.Uploader;
 import com.splitter.R;
 import com.squareup.picasso.Picasso;
 
@@ -51,12 +45,11 @@ public class ChatActivity extends AppCompatActivity {
     EditText msgIv;
     ImageButton sendBasketBtn, sendAttachmentBtn, sendMsgBtn;
     RecyclerView recyclerView;
-    Uploader uploader;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
-    FirebaseDatabase fDb;
+    FirebaseDatabase firebaseDatabase;
     DatabaseReference dbRef;
-    DatabaseReference chatRef;
+    DatabaseReference refForSeen;
     ValueEventListener seenListener;
 
     String otherID, userId;
@@ -76,75 +69,6 @@ public class ChatActivity extends AppCompatActivity {
         seenMessage();
     }
 
-
-    //from https://www.geeksforgeeks.org/how-to-programmatically-hide-android-soft-keyboard/
-    private void closeKeyboard()
-    {
-        // this will give us the view which is currently focus in this layout
-        View view = this.getCurrentFocus();
-
-        // if nothing is currently focus then this will protect the app from crash
-        if (view != null) {
-
-            // now assign the system
-            // service to InputMethodManager
-            InputMethodManager manager
-                    = (InputMethodManager)
-                    getSystemService(
-                            Context.INPUT_METHOD_SERVICE);
-            manager
-                    .hideSoftInputFromWindow(
-                            view.getWindowToken(), 0);
-        }
-    }
-    private void readMessage() {
-        chatRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                messageList.clear();
-                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    Message msg = dataSnapshot.getValue(Message.class);
-                    // TODO change to chatID?ok
-                    if(msg.getReceiver().equals(userId) && msg.getSender().equals(otherID) ||
-                            msg.getReceiver().equals(otherID) && msg.getSender().equals(userId)){
-                        messageList.add(msg);
-                    }
-                    messageAdapter = new MessageAdapter(ChatActivity.this, messageList);
-                    messageAdapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(messageAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-    public void seenMessage() {
-        seenListener = dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Message chat = dataSnapshot.getValue(Message.class);
-                    if(!chat.getMsg().equals("This message was deleted...")){
-                        if (chat.getId() == dataSnapshot.getKey()) {
-                            HashMap<String, Object> hashMap= new HashMap<>();
-                            hashMap.put("seen", true);
-                            dataSnapshot.getRef().updateChildren(hashMap);
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-    public void removeSeenListener(){
-        chatRef.removeEventListener(seenListener);
-    }
     private void initView(){
         // init page view
         Toolbar toolbar = findViewById(R.id.chat_toolbar);
@@ -155,7 +79,7 @@ public class ChatActivity extends AppCompatActivity {
         imgTv = findViewById(R.id.chat_avatar);
         nameTv = findViewById(R.id.chat_name);
         statusTv = findViewById(R.id.chat_user_status);
-        
+
         // init msg view part
         msgIv = findViewById(R.id.chat_msgIv);
         sendBasketBtn = findViewById(R.id.chat_send_basket);
@@ -170,7 +94,7 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         messageAdapter = new MessageAdapter(ChatActivity.this, messageList);
         recyclerView.setAdapter(messageAdapter);
-        
+
         //handle btn clicked
         sendBasketBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,8 +116,7 @@ public class ChatActivity extends AppCompatActivity {
                 String msg = msgIv.getText().toString().trim();
                 if (!TextUtils.isEmpty(msg)){
                     //send msg
-                    uploader = new Uploader();
-                    uploader.sendMessage(msg, userId, otherID);
+                    sendMessage(msg, userId, otherID);
                     //reset msgIv
                     msgIv.setText("");
                     closeKeyboard();
@@ -231,10 +154,99 @@ public class ChatActivity extends AppCompatActivity {
         fUser = fAuth.getCurrentUser();
         Intent intent = getIntent();
         otherID = intent.getStringExtra("friendsID");
-        fDb = FirebaseDatabase.getInstance();
-        dbRef =fDb.getReference("Users");
-        chatRef = fDb.getReference("Chats");
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        dbRef = firebaseDatabase.getReference("Users");
     }
+
+
+    public void sendMessage(String msg, String thisUserID, String otherId) {
+        String timeStamp = getCurrentTime();
+        DatabaseReference reference = firebaseDatabase.getReference("Chats");
+        reference.push();
+        Message m = new Message(reference.getKey(), msg, otherId, thisUserID, timeStamp, false);
+        reference.setValue(m);
+        //create chat list node
+         final DatabaseReference chatReference1 = firebaseDatabase.getReference("ChatList").child(userId).child(otherId);
+         chatReference1.addValueEventListener(new ValueEventListener() {
+             @Override
+             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                 if(!snapshot.exists()){
+                     chatReference1.child("id").setValue(otherId);
+                 }
+             }
+
+             @Override
+             public void onCancelled(@NonNull DatabaseError error) {
+
+             }
+         });
+        final DatabaseReference chatReference2 = firebaseDatabase.getReference("ChatList").child(otherId).child(userId);
+        chatReference2.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!snapshot.exists()){
+                    chatReference2.child("id").setValue(userId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void readMessage() {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats/");
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                messageList.clear();
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    Message msg = dataSnapshot.getValue(Message.class);
+                    // TODO change to chatID?ok
+                    if(msg.getReceiver().equals(userId) && msg.getSender().equals(otherID) ||
+                            msg.getReceiver().equals(otherID) && msg.getSender().equals(userId)){
+                        messageList.add(msg);
+                    }
+                    messageAdapter = new MessageAdapter(ChatActivity.this, messageList);
+                    messageAdapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(messageAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public void seenMessage() {
+        refForSeen = FirebaseDatabase.getInstance().getReference("Chats");
+        seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Message chat = dataSnapshot.getValue(Message.class);
+                    if(!chat.getMsg().equals("This message was deleted...")){
+                        if (chat.getId() == dataSnapshot.getKey()) {
+                            HashMap<String, Object> hashMap= new HashMap<>();
+                            hashMap.put("isSeen", true);
+                            dataSnapshot.getRef().updateChildren(hashMap);
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public void removeSeenListener(){
+        refForSeen.removeEventListener(seenListener);
+    }
+
 
     private void getAndSetFriendsData(){
         Query chatQuery = dbRef.orderByChild("id").equalTo(otherID);
@@ -275,37 +287,32 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        //ToDo finish menu init
-        return super.onCreateOptionsMenu(menu);
+    //from https://www.geeksforgeeks.org/how-to-programmatically-hide-android-soft-keyboard/
+    private void closeKeyboard()
+    {
+        // this will give us the view which is currently focus in this layout
+        View view = this.getCurrentFocus();
+
+        // if nothing is currently focus then this will protect the app from crash
+        if (view != null) {
+
+            // now assign the system
+            // service to InputMethodManager
+            InputMethodManager manager
+                    = (InputMethodManager)
+                    getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+            manager
+                    .hideSoftInputFromWindow(
+                            view.getWindowToken(), 0);
+        }
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        return super.onOptionsItemSelected(item);
+    private String getCurrentTime(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
+        String currentDateAndTime = sdf.format(new Date());
+        return currentDateAndTime;
     }
 
-    public Dialog onCreateDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
-        builder.setTitle(R.string.which_basket)
-                .setItems(R.array.send_basket_options, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-                        //ToDo finish it
-                        if(which == 0){
-                            Toast.makeText(ChatActivity.this, "first option", Toast.LENGTH_SHORT).show();
-                            //startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
-                            //finish();
-                        }
-                        else{
-                            Toast.makeText(ChatActivity.this, "second option", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-        return builder.create();
-    }
     // Functions for checking statuses
     private void checkUserStatus(){
         if(fUser != null){

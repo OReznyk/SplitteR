@@ -20,8 +20,6 @@ public class Basket {
     Double totalPrice;
     List<String> adminsID;
     HashMap<Product, Integer> listToBye;
-    DatabaseReference dbRef;
-    FirebaseDatabase fDb;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
 

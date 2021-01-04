@@ -2,14 +2,12 @@ package com.splitter.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.view.MenuItemCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabItem;
@@ -31,6 +29,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     TabItem tabChats, tabTemp, tabFriends;
+    int tabSelected;
     private ViewPager2 viewPager2;
     FirebaseUser fUser;
     DatabaseReference dbRef;
@@ -74,15 +73,17 @@ public class MainActivity extends AppCompatActivity {
                switch (position){
                    case 0: {
                        tab.setText("Chats");
+                       tabSelected = 0;
                        break;
                    }
                    case 1: {
                        tab.setText("Profile");
+                       tabSelected = 1;
                        break;
                    }
                    case 2: {
                        tab.setText("Friends");
-
+                       tabSelected = 2;
                        break;
                    }
                }
@@ -111,18 +112,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu){
         //inflating menu
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        MenuItem item = menu.findItem(R.id.menu_action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        MenuItem searchItem = menu.findItem(R.id.menu_action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        //searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //keyboard button "search" pressed
-                if(!TextUtils.isEmpty(query.trim())){
-                    //ToDo search users/groups
-                }
-                else {
-                    //TODO getAllUsers or getAllChats
-                }
                 return false;
             }
 
@@ -139,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.menu_action_search:
+                return true;
             case R.id.menu_action_logout:
                 setOnlineStatus("offline");
                 FirebaseAuth.getInstance().signOut();

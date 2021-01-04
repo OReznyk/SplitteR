@@ -15,7 +15,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/friend_avatarIv"
+            android:id="@+id/row_imgTv"
             android:layout_width="70dp"
             android:layout_height="70dp"
             app:srcCompat="@drawable/ic_default_avatar" />
@@ -28,20 +28,20 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/friend_name"
+                android:id="@+id/row_top_textField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt_bold"
-                android:hint="Friend's name"
+                android:hint="title"
                 android:textColor="@color/colorWhite"
                 android:textSize="24dp" />
 
             <TextView
-                android:id="@+id/friend_email"
+                android:id="@+id/row_bottom_textField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt"
-                android:hint="Friend's email"
+                android:hint="textField"
                 android:textColor="@color/colorWhite"
                 android:textSize="18dp" />
 

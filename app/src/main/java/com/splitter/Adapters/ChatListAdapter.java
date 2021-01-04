@@ -16,47 +16,60 @@ import com.splitter.Model.User;
 import com.splitter.R;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
 
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
+public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHolder> {
     Context context;
-    List<User> userList;
+    List<User> chatsList;
+    private final HashMap<String, String> lastMessages;
 
-    public UsersAdapter(Context context, List<User> userList) {
+    public ChatListAdapter(Context context, List<User> chatsList) {
         this.context = context;
-        this.userList = userList;
+        this.chatsList = chatsList;
+        lastMessages = new HashMap<>();
+    }
+    public void setLastMessage(String userID, String msg){
+        lastMessages.put(userID, msg);
     }
 
     class MyHolder extends RecyclerView.ViewHolder {
-        ImageView mAvatarIv;
-        TextView mNameTv, mEmailTv;
+        ImageView imgTv;
+        TextView titleTv, textTv;
 
         public MyHolder(@NonNull View view) {
             super(view);
-            mAvatarIv = view.findViewById(R.id.row_imgTv);
-            mEmailTv = view.findViewById(R.id.row_bottom_textField);
-            mNameTv = view.findViewById(R.id.row_top_textField);
+            imgTv = view.findViewById(R.id.row_imgTv);
+            textTv = view.findViewById(R.id.row_bottom_textField);
+            titleTv = view.findViewById(R.id.row_top_textField);
         }
     }
 
     @NonNull
     @Override
-    public UsersAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ChatListAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_row_user_or_chat, parent, false);
         return new MyHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UsersAdapter.MyHolder holder, int position) {
-        //get data
-        User user = userList.get(position);
+    public void onBindViewHolder(@NonNull MyHolder holder, int position) {
+        User user = chatsList.get(position);
+        String lastMessage = lastMessages.get(user.getId());
         //set data
-        holder.mNameTv.setText(user.getName());
-        holder.mEmailTv.setText(user.getEmail());
+        holder.titleTv.setText(user.getName());
+        holder.textTv.setText(user.getEmail());
+        if(lastMessage == null || lastMessage.equals("default")){
+            holder.textTv.setVisibility(View.GONE);
+        }
+        else{
+            holder.textTv.setVisibility(View.VISIBLE);
+            holder.textTv.setText(lastMessage);
+        }
         try {
             Picasso.get().load(user.getAvatar())
                     .placeholder(R.drawable.ic_default_avatar)
-                    .into(holder.mAvatarIv);
+                    .into(holder.imgTv);
         } catch (Exception e) {
         }
 
@@ -74,7 +87,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
     }
 
     @Override public int getItemCount() {
-        return userList.size();
+        return chatsList.size();
     }
 
 }
