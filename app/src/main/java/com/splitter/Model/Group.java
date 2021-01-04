@@ -2,12 +2,12 @@ package com.splitter.Model;
 
 import android.net.Uri;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Group {
     private String id;
     private String title;
+    private String groupImg;
     private List<String> participants;
     private List<String> adminsIDs;
     private List<Uri> images;
@@ -16,13 +16,14 @@ public class Group {
     public Group() {
     }
 
-    public Group(String id, String title, List<String> participants, List<String> adminsIDs) {
+    public Group(String id, String title, String groupImg, List<String> participants, List<String> adminsIDs, List<Uri> images, List<Basket> baskets) {
         this.id = id;
         this.title = title;
+        this.groupImg = groupImg;
         this.participants = participants;
         this.adminsIDs = adminsIDs;
-        this.images = new ArrayList<>();
-        this.baskets = new ArrayList<>();
+        this.images = images;
+        this.baskets = baskets;
     }
 
     public String getId() {
@@ -39,6 +40,14 @@ public class Group {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getGroupImg() {
+        return groupImg;
+    }
+
+    public void setGroupImg(String groupImg) {
+        this.groupImg = groupImg;
     }
 
     public List<String> getParticipants() {

@@ -17,9 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.splitter.Model.Group;
+import com.splitter.Model.Uploader;
 import com.splitter.R;
 
 import java.util.ArrayList;
@@ -27,14 +30,16 @@ import java.util.List;
 
 public class NewGroupActivity  extends AppCompatActivity {
 
-    private final Uri imgURI = null;
-
+    private Uri imgURI = null;
+    private  Group group;
     private static final String TAG = "TAG";
     private ImageView groupImg;
     private EditText title;
     private RecyclerView participantsView;
     private FloatingActionButton addParticipantBtn;
     private Button saveBtn;
+    private FirebaseUser user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -49,11 +54,10 @@ public class NewGroupActivity  extends AppCompatActivity {
         //ToDo add participants & adminID as this user ID
         List<String> participants = new ArrayList<>();
         List<String> admins = new ArrayList<>();
-
         groupImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //showImagePickDialog();
+                showImagePickDialog();
             }
         });
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -72,15 +76,22 @@ public class NewGroupActivity  extends AppCompatActivity {
         });
     }
 
+    private void showImagePickDialog() {
+        Intent i = new Intent(this, ImagePicker.class);
+        startActivityForResult(i, 1);
+    }
+
     private void saveToFirebase(String img, String gTitle, List<String>participants, List<String>adminsIDs) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data? Set img
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("Groups");
         DatabaseReference newID = dbRef.push();
-        Group group = new Group(newID.getKey(), gTitle, participants, adminsIDs);
+        group = new Group(newID.getKey(), gTitle, imgURI.toString(), participants, adminsIDs, new ArrayList<>(), new ArrayList<>());
         newID.setValue(group).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Uploader uploader = new Uploader();
+                uploader.uploadPhoto(imgURI, "profile", user.getUid(), group.getId());
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("newGroupID", group.getId());
                 setResult(RESULT_OK, resultIntent);
@@ -95,4 +106,28 @@ public class NewGroupActivity  extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1){
+            if (resultCode == RESULT_OK) {
+                imgURI = Uri.parse(data.getStringExtra("uriAsString"));
+                groupImg.setImageURI(imgURI);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    @Override
+    protected void onStart(){
+        checkUserStatus();
+        super.onStart();
+    }
+    private void checkUserStatus(){
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user == null){
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        }
+    }
+
 }

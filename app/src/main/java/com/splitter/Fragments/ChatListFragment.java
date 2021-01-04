@@ -51,6 +51,7 @@ public class ChatListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         //create new group
         actionButton = view.findViewById(R.id.floatingActionButton);
+        actionButton.show();
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +60,7 @@ public class ChatListFragment extends Fragment {
         });
         //init & all get users to list
         //ToDo change all to friends only
+        usersForChatsData = new ArrayList<>();
         chatsIDs = new ArrayList<>();
         getAllChatsAndGroups();
         return view;

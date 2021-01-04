@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -20,6 +21,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -162,9 +165,20 @@ public class ChatActivity extends AppCompatActivity {
     public void sendMessage(String msg, String thisUserID, String otherId) {
         String timeStamp = getCurrentTime();
         DatabaseReference reference = firebaseDatabase.getReference("Chats");
-        reference.push();
-        Message m = new Message(reference.getKey(), msg, otherId, thisUserID, timeStamp, false);
-        reference.setValue(m);
+        DatabaseReference newID = reference.push();
+        Message m = new Message(newID.getKey(), msg, otherId, thisUserID, timeStamp, false);
+        newID.setValue(m).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //to log failure
+                Log.d("TAG", "Msg not saved "+ m.getId() + " "+ e.getMessage());
+                setResult(RESULT_CANCELED);
+            }
+        });
         //create chat list node
          final DatabaseReference chatReference1 = firebaseDatabase.getReference("ChatList").child(userId).child(otherId);
          chatReference1.addValueEventListener(new ValueEventListener() {
@@ -197,7 +211,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void readMessage() {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats/");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats");
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
