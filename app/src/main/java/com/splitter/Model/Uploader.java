@@ -1,6 +1,5 @@
 package com.splitter.Model;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -25,30 +24,32 @@ public class Uploader {
     //firebase
     FirebaseDatabase firebaseDatabase;
     StorageReference storageReference;
-    Intent intent;
+    String downloadUri;
 
     private final boolean uploaded = false;
 
 
     public Uploader() {
+        downloadUri = "";
         firebaseInit();
     }
 
-    public boolean uploadPhoto(Uri uri, String path, String parentId, String imageTag) {
+    public String uploadPhoto(Uri uri, String path, String parentId, String imageTag) {
         DatabaseReference dbRef = firebaseDatabase.getReference("");
         String tagPath = "images" + "/" + path + "/" + parentId + "/" + imageTag;
         StorageReference sReference = storageReference.child(tagPath);
         sReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                while (!uriTask.isSuccessful()) ;
-                if (uriTask.isSuccessful()) {
+                Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
+                while (!task.isSuccessful()) ;
+                if (task.isSuccessful()) {
                     HashMap<String, Object> results = new HashMap<>();
                     dbRef.child(parentId).updateChildren(results).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "Success: image uploaded ");
+                            downloadUri = task.getResult().toString();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -66,7 +67,7 @@ public class Uploader {
                 Log.d(TAG, "Failure: uriTask not successful " + e.getMessage());
             }
         });
-        return uploaded;
+        return downloadUri;
     }
 
     //ToDo delete ONLY users messages

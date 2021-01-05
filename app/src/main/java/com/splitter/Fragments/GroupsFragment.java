@@ -27,104 +27,109 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.splitter.Activities.LoginActivity;
-import com.splitter.Adapters.UsersAdapter;
-import com.splitter.Model.User;
+import com.splitter.Activities.NewGroupActivity;
+import com.splitter.Adapters.GroupListAdapter;
+import com.splitter.Model.Group;
 import com.splitter.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class UsersListFragment extends Fragment {
-    RecyclerView recyclerView;
-    FloatingActionButton floatingActionButton;
-    UsersAdapter adapter;
-    List<User> userList;
+public class GroupsFragment extends Fragment {
+    FloatingActionButton actionButton;
+    FirebaseAuth fAuth;
     FirebaseUser fUser;
-    DatabaseReference dbRef;
-
-
-    public UsersListFragment() {
-        // Required empty public constructor
-    }
+    GroupListAdapter adapter;
+    DatabaseReference msgsRef, groupsRef;
+    RecyclerView recyclerView;
+    List<Group> groups;
+    public GroupsFragment(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        floatingActionButton = view.findViewById(R.id.floatingActionButton);
-        floatingActionButton.hide();
+        View view =  inflater.inflate(R.layout.fragment_list, container, false);
+        initFirebase();
         recyclerView = view.findViewById(R.id.list_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        
-        //init & all get users to list
-        //ToDo change all to friends only
-        userList = new ArrayList<>();
-        getAllUsers();
-        
+        //create new group
+        actionButton = view.findViewById(R.id.floatingActionButton);
+        actionButton.show();
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(getActivity(), NewGroupActivity.class), 1);
+            }
+        });
+        groups = new ArrayList<>();
+        getAllGroups();
         return view;
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+        if(requestCode==1)
+        {
+            String groupID = data.getStringExtra("newGroupID");
+            //TODO: add group to view
+        }
+    }
 
-    private void getAllUsers() {
-        if(dbRef == null) initFirebase();
-        dbRef.addValueEventListener(new ValueEventListener() {
+    private void getAllGroups() {
+        groupsRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-
-                    if(!fUser.getUid().equals(user.getId())){
-                        userList.add(user);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                groups.clear();
+                String userID = fUser.getUid();
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    if(dataSnapshot.child("participants").hasChild(userID)){
+                        Group group = dataSnapshot.getValue(Group.class);
+                        groups.add(group);
                     }
-                    adapter = new UsersAdapter(getActivity(), userList);
-                    recyclerView.setAdapter(adapter);
                 }
-
+                adapter = new GroupListAdapter(getActivity(), groups);
+                recyclerView.setAdapter(adapter);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
     }
-    public void searchUsers(String s){
-        if(dbRef == null) initFirebase();
-        dbRef.addValueEventListener(new ValueEventListener() {
+
+    private void searchGroups(String s) {
+        groupsRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-                    if(!user.getId().equals(fUser.getUid())){
-                        if(user.getName().toLowerCase().contains(s.toLowerCase()) || user.getEmail().toLowerCase().contains(s.toLowerCase())) {
-                            userList.add(user);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                groups.clear();
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    if(dataSnapshot.child("participants").child(fUser.getUid()).exists()){
+                        if(dataSnapshot.child("title").toString().toLowerCase().contains(s.toLowerCase())){
+                            Group group = dataSnapshot.getValue(Group.class);
+                            groups.add(group);
                         }
                     }
-                    adapter = new UsersAdapter(getActivity(), userList);
-                    adapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(adapter);
                 }
-
+                adapter = new GroupListAdapter(getActivity(), groups);
+                recyclerView.setAdapter(adapter);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                //TODO fill onCanceled
+
             }
         });
     }
-    private void initFirebase(){
-        fUser = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference("Users");
-    }
 
-    //ToDo: the problem is that searching (getting string for searching) running in main activity so this one does not count
+    private void initFirebase(){
+        fAuth = FirebaseAuth.getInstance();
+        fUser = fAuth.getCurrentUser();
+        msgsRef = FirebaseDatabase.getInstance().getReference("Chats");
+        groupsRef = FirebaseDatabase.getInstance().getReference("Groups");
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
         setHasOptionsMenu(true);
@@ -140,20 +145,20 @@ public class UsersListFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if(!TextUtils.isEmpty(query.trim())){searchUsers(query);}
-                else getAllUsers();
+                if(!TextUtils.isEmpty(query.trim())){searchGroups(query);}
+                else getAllGroups();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(!TextUtils.isEmpty(newText.trim())){searchUsers(newText);}
-                else getAllUsers();
+                if(!TextUtils.isEmpty(newText.trim())){searchGroups(newText);}
+                else getAllGroups();
                 return false;
             }
         });
 
-         super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -176,4 +181,5 @@ public class UsersListFragment extends Fragment {
             getActivity().finish();
         }
     }
+
 }

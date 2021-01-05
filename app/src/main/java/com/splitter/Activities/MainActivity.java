@@ -15,24 +15,18 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.splitter.Adapters.TabsAdapter;
-import com.splitter.Model.User;
 import com.splitter.R;
 
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
-    TabItem tabChats, tabTemp, tabFriends;
-    int tabSelected;
+    TabItem tabChats, tabGroups, tabTemp, tabFriends;
     private ViewPager2 viewPager2;
     FirebaseUser fUser;
-    DatabaseReference dbRef;
 
 
     @Override
@@ -44,24 +38,13 @@ public class MainActivity extends AppCompatActivity {
         initPageView();
         //database
         fUser = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference("Users");
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user  = snapshot.getValue(User.class);
-            }
-            //ToDo: handle db error
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
     private void initPageView(){
         tabLayout =  findViewById(R.id.main_tabBar);
         //ToDo tabItems init
         tabChats = findViewById(R.id.main_chats_tab);
+        tabGroups = findViewById(R.id.main_groups_tab);
         tabTemp = findViewById(R.id.main_profile_tab);
         tabFriends = findViewById(R.id.main_friends_tab);
         //pager init
@@ -73,17 +56,18 @@ public class MainActivity extends AppCompatActivity {
                switch (position){
                    case 0: {
                        tab.setText("Chats");
-                       tabSelected = 0;
                        break;
                    }
                    case 1: {
-                       tab.setText("Profile");
-                       tabSelected = 1;
+                       tab.setText("Groups");
                        break;
                    }
                    case 2: {
+                       tab.setText("Profile");
+                       break;
+                   }
+                   case 3: {
                        tab.setText("Friends");
-                       tabSelected = 2;
                        break;
                    }
                }
@@ -147,12 +131,6 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    @Override
-    protected void onStart(){
-        checkUserStatus();
-        setOnlineStatus("online");
-        super.onStart();
-    }
 
     @Override
     protected void onPause(){
@@ -169,6 +147,13 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         setOnlineStatus("offline");
     }
+    @Override
+    protected void onStart(){
+        checkUserStatus();
+        setOnlineStatus("online");
+        super.onStart();
+    }
+
     private void checkUserStatus(){
         if(fUser == null){
             startActivity(new Intent(this, LoginActivity.class));

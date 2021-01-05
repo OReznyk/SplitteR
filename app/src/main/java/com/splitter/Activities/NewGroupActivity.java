@@ -26,7 +26,7 @@ import com.splitter.Model.Uploader;
 import com.splitter.R;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class NewGroupActivity  extends AppCompatActivity {
 
@@ -52,8 +52,11 @@ public class NewGroupActivity  extends AppCompatActivity {
         addParticipantBtn = findViewById(R.id.group_addBtn);
         saveBtn = findViewById(R.id.group_saveBtn);
         //ToDo add participants & adminID as this user ID
-        List<String> participants = new ArrayList<>();
-        List<String> admins = new ArrayList<>();
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        HashMap<String, String> admins = new HashMap<>();
+        admins.put(user.getUid(), "");
+        HashMap<String, String> participants = new HashMap<>(admins);
         groupImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,17 +84,21 @@ public class NewGroupActivity  extends AppCompatActivity {
         startActivityForResult(i, 1);
     }
 
-    private void saveToFirebase(String img, String gTitle, List<String>participants, List<String>adminsIDs) {
+    private void saveToFirebase(String img, String gTitle, HashMap<String, String>participants, HashMap<String, String>adminsIDs) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data? Set img
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("Groups");
         DatabaseReference newID = dbRef.push();
-        group = new Group(newID.getKey(), gTitle, imgURI.toString(), participants, adminsIDs, new ArrayList<>(), new ArrayList<>());
+        group = new Group(newID.getKey(), gTitle, "", participants, adminsIDs, new ArrayList<>(), new ArrayList<>());
         newID.setValue(group).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Uploader uploader = new Uploader();
-                uploader.uploadPhoto(imgURI, "profile", user.getUid(), group.getId());
+                if(imgURI != null){
+                    Uploader uploader = new Uploader();
+                    String uploadedImg = uploader.uploadPhoto(imgURI, "groups", group.getId(), "groupImg");
+                    if(uploadedImg != "") group.setGroupImg(uploadedImg);
+                    newID.setValue(group);
+                }
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("newGroupID", group.getId());
                 setResult(RESULT_OK, resultIntent);
@@ -123,7 +130,6 @@ public class NewGroupActivity  extends AppCompatActivity {
         super.onStart();
     }
     private void checkUserStatus(){
-        user = FirebaseAuth.getInstance().getCurrentUser();
         if(user == null){
             startActivity(new Intent(this, LoginActivity.class));
             finish();

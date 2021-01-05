@@ -126,10 +126,10 @@ public class ProfileFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 imgURI = Uri.parse(data.getStringExtra("uriAsString"));
                 Uploader uploader = new Uploader();
-                uploader.uploadPhoto(imgURI, "profile", user.getId(), avatarOrCover);
+                 String img = uploader.uploadPhoto(imgURI, "profile", user.getId(), avatarOrCover);
                 if(avatarOrCover.equals("avatar")) avatarIv.setImageURI(imgURI);
                 else coverIv.setImageURI(imgURI);
-                updateUserData(avatarOrCover, imgURI.toString());
+                updateUserData(avatarOrCover, img);
             }
             //TODO get result not ok
         }

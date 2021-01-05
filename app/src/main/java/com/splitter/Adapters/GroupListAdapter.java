@@ -12,21 +12,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.splitter.Activities.ChatActivity;
-import com.splitter.Model.User;
+import com.splitter.Model.Group;
 import com.splitter.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHolder> {
+public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.MyHolder> {
     Context context;
-    List<User> chatsList;
+    List<Group> groupsList;
     private final HashMap<String, String> lastMessages;
 
-    public ChatListAdapter(Context context, List<User> chatsList) {
+    public GroupListAdapter(Context context, List<Group> groupsList) {
         this.context = context;
-        this.chatsList = chatsList;
+        this.groupsList = groupsList;
         lastMessages = new HashMap<>();
     }
     public void setLastMessage(String userID, String msg){
@@ -47,17 +47,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
 
     @NonNull
     @Override
-    public ChatListAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GroupListAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_row_user_or_chat, parent, false);
         return new MyHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
-        User user = chatsList.get(position);
-        String lastMessage = lastMessages.get(user.getId());
+        Group group = groupsList.get(position);
+        String lastMessage = lastMessages.get(group.getId());
         //set data
-        holder.titleTv.setText(user.getName());
+        holder.titleTv.setText(group.getTitle());
         if(lastMessage == null || lastMessage.equals("default")){
             holder.textTv.setVisibility(View.GONE);
         }
@@ -66,7 +66,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
             holder.textTv.setText(lastMessage);
         }
         try {
-            Picasso.get().load(user.getAvatar())
+            Picasso.get().load(group.getGroupImg())
                     .placeholder(R.drawable.ic_default_avatar)
                     .into(holder.imgTv);
         } catch (Exception e) {
@@ -77,8 +77,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //ToDo: change to group chat
                 Intent intent = new Intent(context, ChatActivity.class);
-                intent.putExtra("friendsID", user.getId());
+                intent.putExtra("groupID", group.getId());
                 context.startActivity(intent);
             }
         });
@@ -86,7 +87,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
     }
 
     @Override public int getItemCount() {
-        return chatsList.size();
+        return groupsList.size();
     }
 
 }

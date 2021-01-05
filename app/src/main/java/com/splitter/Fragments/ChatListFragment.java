@@ -2,11 +2,18 @@ package com.splitter.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.splitter.Activities.NewGroupActivity;
+import com.splitter.Activities.LoginActivity;
 import com.splitter.Adapters.ChatListAdapter;
 import com.splitter.Model.Chat;
 import com.splitter.Model.Message;
@@ -51,18 +58,11 @@ public class ChatListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         //create new group
         actionButton = view.findViewById(R.id.floatingActionButton);
-        actionButton.show();
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(getActivity(), NewGroupActivity.class), 1);
-            }
-        });
+        actionButton.hide();
         //init & all get users to list
-        //ToDo change all to friends only
         usersForChatsData = new ArrayList<>();
         chatsIDs = new ArrayList<>();
-        getAllChatsAndGroups();
+        getAllChats();
         return view;
     }
     @Override
@@ -77,7 +77,7 @@ public class ChatListFragment extends Fragment {
         }
     }
 
-    private void getAllChatsAndGroups() {
+    private void getAllChats() {
         //ToDo: get groups as well
         //get chats
         chatListRef.addValueEventListener(new ValueEventListener() {
@@ -192,8 +192,60 @@ public class ChatListFragment extends Fragment {
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
         chatListRef = FirebaseDatabase.getInstance().getReference("ChatList").child(fUser.getUid());
         msgsRef = FirebaseDatabase.getInstance().getReference("Chats");
-        groupsRef = FirebaseDatabase.getInstance().getReference("Groups");
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState){
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        //inflating menu
+        inflater.inflate(R.menu.main_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(!TextUtils.isEmpty(query.trim())){searchChats(query);}
+                else getAllChats();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(!TextUtils.isEmpty(newText.trim())){searchChats(newText);}
+                else getAllChats();
+                return false;
+            }
+        });
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_action_search:
+                return true;
+            case R.id.menu_action_logout:
+                FirebaseAuth.getInstance().signOut();
+                checkUserStatus();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void checkUserStatus(){
+        if(fUser == null){
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
+        }
+    }
+
 
 
 }

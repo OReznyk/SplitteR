@@ -2,21 +2,22 @@ package com.splitter.Model;
 
 import android.net.Uri;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Group {
     private String id;
     private String title;
     private String groupImg;
-    private List<String> participants;
-    private List<String> adminsIDs;
+    private HashMap<String, String> participants;
+    private HashMap<String, String> adminsIDs;
     private List<Uri> images;
     private List<Basket> baskets;
 
     public Group() {
     }
 
-    public Group(String id, String title, String groupImg, List<String> participants, List<String> adminsIDs, List<Uri> images, List<Basket> baskets) {
+    public Group(String id, String title, String groupImg, HashMap<String, String> participants, HashMap<String, String> adminsIDs, List<Uri> images, List<Basket> baskets) {
         this.id = id;
         this.title = title;
         this.groupImg = groupImg;
@@ -50,19 +51,19 @@ public class Group {
         this.groupImg = groupImg;
     }
 
-    public List<String> getParticipants() {
+    public HashMap<String, String> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<String> participants) {
+    public void setParticipants(HashMap<String, String> participants) {
         this.participants = participants;
     }
 
-    public List<String> getAdminsIDs() {
+    public HashMap<String, String> getAdminsIDs() {
         return adminsIDs;
     }
 
-    public void setAdminsIDs(List<String> adminsIDs) {
+    public void setAdminsIDs(HashMap<String, String> adminsIDs) {
         this.adminsIDs = adminsIDs;
     }
 
