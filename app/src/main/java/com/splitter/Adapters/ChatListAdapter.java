@@ -78,7 +78,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyHold
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatActivity.class);
-                intent.putExtra("friendsID", user.getId());
+                intent.putExtra("chatID", user.getId());
+                intent.putExtra("isGroup", false);
                 context.startActivity(intent);
             }
         });

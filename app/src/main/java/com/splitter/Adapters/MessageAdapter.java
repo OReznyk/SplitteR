@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.splitter.Model.Message;
-import com.splitter.Model.Uploader;
 import com.splitter.R;
 
 import java.util.HashMap;
@@ -30,12 +33,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
 
     Context context;
     List<Message> chatList;
-    Uploader uploader;
+    Boolean isGroup = false;
     FirebaseUser fUser;
+    String sender;
 
-    public MessageAdapter(Context context, List<Message> chatList) {
+    public MessageAdapter(Context context, List<Message> chatList, Boolean isGroup) {
         this.context = context;
         this.chatList = chatList;
+        this.isGroup = isGroup;
     }
 
 
@@ -55,10 +60,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
-        String msg = chatList.get(position).getMsg();
-        String timeStamp = chatList.get(position).getTimeStamp();
-        holder.msgTv.setText(msg);
-        holder.timeTv.setText(timeStamp);
+        Message msg = chatList.get(position);
+        if(isGroup) {
+            sender = "hidden";
+            setSenderName(msg.getReceiver());
+            holder.senderTv.setText(sender);
+        }
+        holder.msgTv.setText(msg.getMsg());
+        holder.timeTv.setText(msg.getTimeStamp());
         // ToDo: set seen status. Problem with seen setter
         if (position == chatList.size()-1){
             if(!chatList.get(chatList.size()-1).isSeen()) holder.isSeenTv.setText("delivered");
@@ -89,6 +98,27 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
             builder.create().show();
         });
     }
+
+    private void setSenderName(String senderID){
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference dbRef = firebaseDatabase.getReference("Users");
+        Query chatQuery = dbRef.orderByChild("id").equalTo(senderID);
+        chatQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    // To get & set image & name
+                    sender = ""+dataSnapshot.child("name").getValue();
+                    break;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
     public void deleteMsg(String key) {
         DatabaseReference dbRefToMSG = FirebaseDatabase.getInstance().getReference("Chats").child(key);
         //dbRefToMSG.removeValue();
@@ -115,11 +145,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
 
 
     class MyHolder extends RecyclerView.ViewHolder {
-        TextView msgTv, timeTv, isSeenTv;
+        TextView senderTv, msgTv, timeTv, isSeenTv;
         LinearLayout msgLayout;
 
         public MyHolder(@NonNull View itemView) {
         super(itemView);
+        senderTv = itemView.findViewById(R.id.senderTv);
+        // if not group don't show sender`s name
+        if(!isGroup) senderTv.setVisibility(View.GONE);
         msgTv = itemView.findViewById(R.id.msgTv);
         timeTv = itemView.findViewById(R.id.msgTimeTv);
         isSeenTv = itemView.findViewById(R.id.msgIsSeenTv);

@@ -32,7 +32,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.splitter.Adapters.MessageAdapter;
+import com.splitter.Model.Group;
 import com.splitter.Model.Message;
+import com.splitter.Model.User;
 import com.splitter.R;
 import com.squareup.picasso.Picasso;
 
@@ -51,11 +53,12 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     FirebaseDatabase firebaseDatabase;
-    DatabaseReference dbRef;
+    DatabaseReference usersRef, groupsRef;
     DatabaseReference refForSeen;
     ValueEventListener seenListener;
 
     String otherID, userId;
+    Boolean isGroup;
 
     List<Message> messageList;
     MessageAdapter messageAdapter;
@@ -67,12 +70,16 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         initView();
         initFirebase();
-        getAndSetFriendsData();
+        if(isGroup)getAndSetGroupData();
+        else getAndSetFriendsData();
         readMessage();
         seenMessage();
     }
 
     private void initView(){
+        Intent intent = getIntent();
+        otherID = intent.getStringExtra("chatID");
+        isGroup = intent.getBooleanExtra("isGroup", false);
         // init page view
         Toolbar toolbar = findViewById(R.id.chat_toolbar);
         toolbar.setTitle("");
@@ -95,7 +102,7 @@ public class ChatActivity extends AppCompatActivity {
         messageList = new ArrayList<>();
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-        messageAdapter = new MessageAdapter(ChatActivity.this, messageList);
+        messageAdapter = new MessageAdapter(ChatActivity.this, messageList, isGroup);
         recyclerView.setAdapter(messageAdapter);
 
         //handle btn clicked
@@ -155,10 +162,9 @@ public class ChatActivity extends AppCompatActivity {
     private void initFirebase(){
         fAuth = FirebaseAuth.getInstance();
         fUser = fAuth.getCurrentUser();
-        Intent intent = getIntent();
-        otherID = intent.getStringExtra("friendsID");
         firebaseDatabase = FirebaseDatabase.getInstance();
-        dbRef = firebaseDatabase.getReference("Users");
+        usersRef = firebaseDatabase.getReference("Users");
+        groupsRef = firebaseDatabase.getReference("Groups");
     }
 
 
@@ -223,7 +229,7 @@ public class ChatActivity extends AppCompatActivity {
                             msg.getReceiver().equals(otherID) && msg.getSender().equals(userId)){
                         messageList.add(msg);
                     }
-                    messageAdapter = new MessageAdapter(ChatActivity.this, messageList);
+                    messageAdapter = new MessageAdapter(ChatActivity.this, messageList, isGroup);
                     messageAdapter.notifyDataSetChanged();
                     recyclerView.setAdapter(messageAdapter);
                 }
@@ -261,40 +267,59 @@ public class ChatActivity extends AppCompatActivity {
         refForSeen.removeEventListener(seenListener);
     }
 
-
     private void getAndSetFriendsData(){
-        Query chatQuery = dbRef.orderByChild("id").equalTo(otherID);
+        Query chatQuery = usersRef.orderByChild("id").equalTo(otherID);
         chatQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    // To get & set image & name
-                    String name = ""+dataSnapshot.child("name").getValue();
-                    String img = ""+dataSnapshot.child("avatar").getValue();
-                    nameTv.setText(name);
+                    User other = dataSnapshot.getValue(User.class);
+                    nameTv.setText(other.getName());
                     try {
-                        Picasso.get().load(img).placeholder(R.drawable.ic_default_avatar).into(imgTv);
+                        Picasso.get().load(other.getAvatar()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
 
                     }catch (Exception e){
                         Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
                     }
                     // To get & set typing/online status
-                    String typingStatus = ""+ dataSnapshot.child("typingTo").getValue();
-                    String onlineStatus = ""+ dataSnapshot.child("onlineStatus").getValue();
-                    if(typingStatus.equals(userId)){
+                    if(other.getTypingTo().equals(userId)){
                         statusTv.setText("typing...");
                     }
                     else{
-                        if(onlineStatus.equals("online")){
-                            statusTv.setText(onlineStatus);
+                        if(other.getOnlineStatus().equals("online")){
+                            statusTv.setText(other.getOnlineStatus());
                         }
                         else{
-                            statusTv.setText("Last seen at: "+onlineStatus);
+                            statusTv.setText("Last seen at: "+ other.getOnlineStatus());
                         }
                     }
                 }
             }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    private void getAndSetGroupData(){
+        Query chatQuery = groupsRef.orderByChild("id").equalTo(otherID);
+        chatQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    Group group = dataSnapshot.getValue(Group.class);
+                    nameTv.setText(group.getTitle());
+                    try {
+                        Picasso.get().load(group.getGroupImg()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
+
+                    }catch (Exception e){
+                        Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
+                    }
+                    //ToDo: fill it with participants names in future
+                    statusTv.setVisibility(View.GONE);
+                }
+            }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
