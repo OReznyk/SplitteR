@@ -12,11 +12,9 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -34,9 +32,7 @@ public class NewGroupActivity  extends AppCompatActivity {
     private  Group group;
     private static final String TAG = "TAG";
     private ImageView groupImg;
-    private EditText title;
-    private RecyclerView participantsView;
-    private FloatingActionButton addParticipantBtn;
+    private EditText title, description;
     private Button saveBtn;
     private FirebaseUser user;
 
@@ -48,15 +44,13 @@ public class NewGroupActivity  extends AppCompatActivity {
 
         groupImg = findViewById(R.id.group_img);
         title = findViewById(R.id.group_title);
-        participantsView = findViewById(R.id.group_participantsIv);
-        addParticipantBtn = findViewById(R.id.group_addBtn);
+        description = findViewById(R.id.group_description);
         saveBtn = findViewById(R.id.group_saveBtn);
         //ToDo add participants & adminID as this user ID
 
         user = FirebaseAuth.getInstance().getCurrentUser();
-        HashMap<String, String> admins = new HashMap<>();
-        admins.put(user.getUid(), "");
-        HashMap<String, String> participants = new HashMap<>(admins);
+        HashMap<String, String> participants = new HashMap<>();
+        participants.put(user.getUid(), "admin");
         groupImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +68,7 @@ public class NewGroupActivity  extends AppCompatActivity {
                     title.setFocusable(true);
                     return;
                 }
-                saveToFirebase(img, gTitle, participants, admins);
+                saveToFirebase(img, title.getText().toString(), description.getText().toString() , participants);
             }
         });
     }
@@ -84,12 +78,12 @@ public class NewGroupActivity  extends AppCompatActivity {
         startActivityForResult(i, 1);
     }
 
-    private void saveToFirebase(String img, String gTitle, HashMap<String, String>participants, HashMap<String, String>adminsIDs) {
+    private void saveToFirebase(String img, String gTitle, String gDescription, HashMap<String, String>participants) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data? Set img
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("Groups");
         DatabaseReference newID = dbRef.push();
-        group = new Group(newID.getKey(), gTitle, "", participants, adminsIDs, new ArrayList<>(), new ArrayList<>());
+        group = new Group(newID.getKey(), gTitle, gDescription, "", participants, new ArrayList<>(), new ArrayList<>());
         newID.setValue(group).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

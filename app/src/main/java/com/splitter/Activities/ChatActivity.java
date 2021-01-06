@@ -7,6 +7,8 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -70,16 +72,15 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         initView();
         initFirebase();
-        if(isGroup)getAndSetGroupData();
-        else getAndSetFriendsData();
+        getAndSetData();
         readMessage();
         seenMessage();
     }
 
     private void initView(){
         Intent intent = getIntent();
-        otherID = intent.getStringExtra("chatID");
         isGroup = intent.getBooleanExtra("isGroup", false);
+        otherID = intent.getStringExtra("chatID");
         // init page view
         Toolbar toolbar = findViewById(R.id.chat_toolbar);
         toolbar.setTitle("");
@@ -267,64 +268,66 @@ public class ChatActivity extends AppCompatActivity {
         refForSeen.removeEventListener(seenListener);
     }
 
-    private void getAndSetFriendsData(){
-        Query chatQuery = usersRef.orderByChild("id").equalTo(otherID);
-        chatQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    User other = dataSnapshot.getValue(User.class);
-                    nameTv.setText(other.getName());
-                    try {
-                        Picasso.get().load(other.getAvatar()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
+    private void getAndSetData(){
+        if(!isGroup){
+            Query chatQuery = usersRef.orderByChild("id").equalTo(otherID);
+            chatQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        User other = dataSnapshot.getValue(User.class);
+                        nameTv.setText(other.getName());
+                        try {
+                            Picasso.get().load(other.getAvatar()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
 
-                    }catch (Exception e){
-                        Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
-                    }
-                    // To get & set typing/online status
-                    if(other.getTypingTo().equals(userId)){
-                        statusTv.setText("typing...");
-                    }
-                    else{
-                        if(other.getOnlineStatus().equals("online")){
-                            statusTv.setText(other.getOnlineStatus());
+                        }catch (Exception e){
+                            Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
+                        }
+                        // To get & set typing/online status
+                        if(other.getTypingTo().equals(userId)){
+                            statusTv.setText("typing...");
                         }
                         else{
-                            statusTv.setText("Last seen at: "+ other.getOnlineStatus());
+                            if(other.getOnlineStatus().equals("online")){
+                                statusTv.setText(other.getOnlineStatus());
+                            }
+                            else{
+                                statusTv.setText("Last seen at: "+ other.getOnlineStatus());
+                            }
                         }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
-    }
-    private void getAndSetGroupData(){
-        Query chatQuery = groupsRef.orderByChild("id").equalTo(otherID);
-        chatQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    Group group = dataSnapshot.getValue(Group.class);
-                    nameTv.setText(group.getTitle());
-                    try {
-                        Picasso.get().load(group.getGroupImg()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
-
-                    }catch (Exception e){
-                        Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
-                    }
-                    //ToDo: fill it with participants names in future
-                    statusTv.setVisibility(View.GONE);
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            });}
+        else {
+            Query chatQuery = groupsRef.orderByChild("id").equalTo(otherID);
+            chatQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Group group = dataSnapshot.getValue(Group.class);
+                        nameTv.setText(group.getTitle());
+                        try {
+                            Picasso.get().load(group.getGroupImg()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
 
-            }
-        });
+                        } catch (Exception e) {
+                            Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
+                        }
+                        //ToDo: fill it with participants names in future
+                        statusTv.setText(group.getDescription());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
     //from https://www.geeksforgeeks.org/how-to-programmatically-hide-android-soft-keyboard/
     private void closeKeyboard()
@@ -351,7 +354,25 @@ public class ChatActivity extends AppCompatActivity {
         String currentDateAndTime = sdf.format(new Date());
         return currentDateAndTime;
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        //inflating menu
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.chat_menu_settings:
+
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     // Functions for checking statuses
     private void checkUserStatus(){
         if(fUser != null){
@@ -374,7 +395,6 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("typingTo", typing);
         databaseReference.updateChildren(hashMap);
     }
-
     @Override
     protected void onStart(){
         checkUserStatus();

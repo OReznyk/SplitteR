@@ -30,9 +30,11 @@ import com.splitter.Activities.LoginActivity;
 import com.splitter.Activities.NewGroupActivity;
 import com.splitter.Adapters.GroupListAdapter;
 import com.splitter.Model.Group;
+import com.splitter.Model.Message;
 import com.splitter.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GroupsFragment extends Fragment {
@@ -93,7 +95,39 @@ public class GroupsFragment extends Fragment {
                 }
                 adapter = new GroupListAdapter(getActivity(), groups);
                 recyclerView.setAdapter(adapter);
+                for(int i=0; i<groups.size(); i++){
+                    lastMsg(groups.get(i).getId());
+                }
             }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void lastMsg(String otherUserId) {
+        msgsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String lastMsg = "default";
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Message msg = snapshot.getValue(Message.class);
+                    if(msg == null){
+                        continue;
+                    }
+                    if(msg.getSender() == null || msg.getReceiver() == null){
+                        continue;
+                    }
+                    if(msg.getReceiver().equals(fUser.getUid()) && msg.getSender().equals(otherUserId) ||
+                            msg.getReceiver().equals(otherUserId) && msg.getSender().equals(fUser.getUid())){
+                        lastMsg = msg.getMsg();
+                    }
+                }
+                adapter.setLastMessage(otherUserId, lastMsg);
+                adapter.notifyDataSetChanged();
+            }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -164,22 +198,22 @@ public class GroupsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.menu_action_search:
-                return true;
             case R.id.menu_action_logout:
+                setOnlineStatus("offline");
                 FirebaseAuth.getInstance().signOut();
-                checkUserStatus();
+
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void checkUserStatus(){
-        if(fUser == null){
-            startActivity(new Intent(getActivity(), LoginActivity.class));
-            getActivity().finish();
-        }
+    private void setOnlineStatus(String status){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("onlineStatus", status);
+        databaseReference.updateChildren(hashMap);
     }
-
 }

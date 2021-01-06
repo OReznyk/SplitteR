@@ -77,7 +77,6 @@ public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.MyHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ToDo: change to group chat
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("chatID", group.getId());
                 intent.putExtra("isGroup", true);

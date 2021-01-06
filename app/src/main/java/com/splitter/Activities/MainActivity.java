@@ -2,12 +2,9 @@ package com.splitter.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabItem;
@@ -92,25 +89,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
+/*   @Override
     public boolean onCreateOptionsMenu(Menu menu){
         //inflating menu
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.menu_action_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        //searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -118,8 +100,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.menu_action_search:
-                return true;
             case R.id.menu_action_logout:
                 setOnlineStatus("offline");
                 FirebaseAuth.getInstance().signOut();
@@ -130,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     @Override
     protected void onPause(){

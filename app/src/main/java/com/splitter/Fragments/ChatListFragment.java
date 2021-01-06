@@ -34,6 +34,7 @@ import com.splitter.Model.User;
 import com.splitter.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ChatListFragment extends Fragment {
@@ -41,10 +42,10 @@ public class ChatListFragment extends Fragment {
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     ChatListAdapter adapter;
-    DatabaseReference usersRef, chatListRef, msgsRef, groupsRef;
+    DatabaseReference usersRef, chatListRef, msgsRef;
     RecyclerView recyclerView;
     List<Chat> chatsIDs;
-    List<User> usersForChatsData;
+    List<User> usersForChatsDataFull, usersForChatsData;
     public ChatListFragment(){}
 
     @Override
@@ -78,8 +79,6 @@ public class ChatListFragment extends Fragment {
     }
 
     private void getAllChats() {
-        //ToDo: get groups as well
-        //get chats
         chatListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -112,14 +111,8 @@ public class ChatListFragment extends Fragment {
                                 break;
                             }
                         }
-                    adapter = new ChatListAdapter(getActivity(), usersForChatsData);
-                    recyclerView.setAdapter(adapter);
-                    //set last msg
-                    for(int i=0; i<usersForChatsData.size(); i++){
-                        lastMsg(usersForChatsData.get(i).getId());
-                    }
                 }
-
+                createChatsListView();
             }
 
             @Override
@@ -127,6 +120,15 @@ public class ChatListFragment extends Fragment {
 
             }
         });
+    }
+
+    private void createChatsListView(){
+        adapter = new ChatListAdapter(getActivity(), usersForChatsData);
+        recyclerView.setAdapter(adapter);
+        //set last msg
+        for(int i=0; i<usersForChatsData.size(); i++){
+            lastMsg(usersForChatsData.get(i).getId());
+        }
     }
 
     private void lastMsg(String otherUserId) {
@@ -160,31 +162,14 @@ public class ChatListFragment extends Fragment {
 
     //ToDo: use searchChats
     public void searchChats(String s){
-        /*if(dbRef == null) initFirebase();
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!chatsList.isEmpty()) chatsList.clear();
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-
-                    if(!user.getId().equals(fUser.getUid())){
-                        if(user.getName().toLowerCase().contains(s.toLowerCase()) || user.getEmail().toLowerCase().contains(s.toLowerCase())) {
-                            chatsList.add(user);
-                        }
-                    }
-                    adapter = new UsersAdapter(getActivity(), chatsList);
-                    adapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(adapter);
-                }
-
+        usersForChatsDataFull = new ArrayList<>(usersForChatsData);
+        usersForChatsData.clear();
+        for(int i=0; i<usersForChatsDataFull.size(); i++){
+            if(usersForChatsDataFull.get(i).getName().toLowerCase().contains(s) || usersForChatsDataFull.get(i).getEmail().toLowerCase().contains(s)){
+                usersForChatsData.add(usersForChatsDataFull.get(i));
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                //TODO fill onCanceled
-            }
-        });*/
+        }
+        createChatsListView();
     }
     private void initFirebase(){
         fAuth = FirebaseAuth.getInstance();
@@ -228,24 +213,23 @@ public class ChatListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.menu_action_search:
-                return true;
             case R.id.menu_action_logout:
+                setOnlineStatus("offline");
                 FirebaseAuth.getInstance().signOut();
-                checkUserStatus();
+
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void checkUserStatus(){
-        if(fUser == null){
-            startActivity(new Intent(getActivity(), LoginActivity.class));
-            getActivity().finish();
-        }
+    private void setOnlineStatus(String status){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("onlineStatus", status);
+        databaseReference.updateChildren(hashMap);
     }
-
-
 
 }

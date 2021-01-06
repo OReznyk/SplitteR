@@ -7,22 +7,21 @@ import java.util.List;
 
 public class Group {
     private String id;
-    private String title;
+    private String title, description;
     private String groupImg;
     private HashMap<String, String> participants;
-    private HashMap<String, String> adminsIDs;
     private List<Uri> images;
     private List<Basket> baskets;
 
     public Group() {
     }
 
-    public Group(String id, String title, String groupImg, HashMap<String, String> participants, HashMap<String, String> adminsIDs, List<Uri> images, List<Basket> baskets) {
+    public Group(String id, String title, String description, String groupImg, HashMap<String, String> participants, List<Uri> images, List<Basket> baskets) {
         this.id = id;
         this.title = title;
+        this.description = description;
         this.groupImg = groupImg;
         this.participants = participants;
-        this.adminsIDs = adminsIDs;
         this.images = images;
         this.baskets = baskets;
     }
@@ -43,6 +42,14 @@ public class Group {
         this.title = title;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getGroupImg() {
         return groupImg;
     }
@@ -57,14 +64,6 @@ public class Group {
 
     public void setParticipants(HashMap<String, String> participants) {
         this.participants = participants;
-    }
-
-    public HashMap<String, String> getAdminsIDs() {
-        return adminsIDs;
-    }
-
-    public void setAdminsIDs(HashMap<String, String> adminsIDs) {
-        this.adminsIDs = adminsIDs;
     }
 
     public List<Uri> getImages() {

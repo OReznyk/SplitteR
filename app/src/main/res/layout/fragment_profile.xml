@@ -38,7 +38,7 @@
                 android:background="@color/colorPrimaryDark"
                 android:padding="5dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_add_avatar" />
+                android:src="@drawable/ic_default_avatar" />
 
             <LinearLayout
                 android:layout_width="165dp"
@@ -82,7 +82,6 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_gravity="center_vertical"
-                android:padding="5dp"
                 android:src="@drawable/ic_settings" />
 
         </LinearLayout>

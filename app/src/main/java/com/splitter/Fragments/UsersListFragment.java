@@ -1,6 +1,5 @@
 package com.splitter.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -26,7 +25,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.splitter.Activities.LoginActivity;
 import com.splitter.Adapters.UsersAdapter;
 import com.splitter.Model.User;
 import com.splitter.R;
@@ -81,7 +79,7 @@ public class UsersListFragment extends Fragment {
                     if(!fUser.getUid().equals(user.getId())){
                         userList.add(user);
                     }
-                    adapter = new UsersAdapter(getActivity(), userList);
+                    adapter = new UsersAdapter(getActivity(), userList, "", false, false);
                     recyclerView.setAdapter(adapter);
                 }
 
@@ -106,7 +104,7 @@ public class UsersListFragment extends Fragment {
                             userList.add(user);
                         }
                     }
-                    adapter = new UsersAdapter(getActivity(), userList);
+                    adapter = new UsersAdapter(getActivity(), userList, "", false, false);
                     adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);
                 }
@@ -124,7 +122,6 @@ public class UsersListFragment extends Fragment {
         dbRef = FirebaseDatabase.getInstance().getReference("Users");
     }
 
-    //ToDo: the problem is that searching (getting string for searching) running in main activity so this one does not count
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
         setHasOptionsMenu(true);
@@ -155,25 +152,5 @@ public class UsersListFragment extends Fragment {
 
          super.onCreateOptionsMenu(menu, inflater);
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.menu_action_search:
-                return true;
-            case R.id.menu_action_logout:
-                FirebaseAuth.getInstance().signOut();
-                checkUserStatus();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
-    private void checkUserStatus(){
-        if(fUser == null){
-            startActivity(new Intent(getActivity(), LoginActivity.class));
-            getActivity().finish();
-        }
-    }
 }
