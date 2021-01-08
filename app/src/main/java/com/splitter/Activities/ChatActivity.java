@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.splitter.Adapters.MessageAdapter;
+import com.splitter.Fragments.UsersListFragment;
 import com.splitter.Model.Group;
 import com.splitter.Model.Message;
 import com.splitter.Model.User;
@@ -59,7 +61,7 @@ public class ChatActivity extends AppCompatActivity {
     DatabaseReference refForSeen;
     ValueEventListener seenListener;
 
-    String otherID, userId;
+    String otherID, userId, groupRole;
     Boolean isGroup;
 
     List<Message> messageList;
@@ -70,8 +72,9 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        initView();
+
         initFirebase();
+        initView();
         getAndSetData();
         readMessage();
         seenMessage();
@@ -136,6 +139,11 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if(isGroup){
+            loadMyGroupPermissions();
+        }
+        else groupRole = "";
         readMessage();
         seenMessage();
         msgIv.addTextChangedListener(new TextWatcher() {
@@ -158,11 +166,12 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
     }
+
     private void initFirebase(){
         fAuth = FirebaseAuth.getInstance();
         fUser = fAuth.getCurrentUser();
+        userId = fUser.getUid();
         firebaseDatabase = FirebaseDatabase.getInstance();
         usersRef = firebaseDatabase.getReference("Users");
         groupsRef = firebaseDatabase.getReference("Groups");
@@ -363,17 +372,54 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
         switch (item.getItemId()) {
             case R.id.chat_menu_settings:
+                if(isGroup) {
+                    //start usersListFragment and not activity
+                    Bundle args = new Bundle();
+                    args.putString("groupID", otherID);
+                    // send my permissions
+                    args.putBoolean("isAdmin", groupRole.equals("admin"));
+                    // TODO: change for more options
+                    args.putBoolean("settings", true);
+                    UsersListFragment fragment = new UsersListFragment();
+                    fragment.setArguments(args);
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.container, fragment);
+                    fragmentTransaction.commit();
+                    /*
+                    Intent intent = new Intent(this, NewParticipantActivity.class);
+                    intent.putExtra("groupID", otherID);
+                    intent.putExtra("permissions", groupRole);
+                    startActivity(intent);*/
 
-                finish();
+                }
+                else Toast.makeText(this, "chat Settings", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
     // Functions for checking statuses
+
+    private void loadMyGroupPermissions() {
+        DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("Groups");
+        groupsRef.child(otherID).child("participants").child(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()){
+                            groupRole = "" + snapshot.getValue();
+                        }
+                        else groupRole = "";
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
     private void checkUserStatus(){
         if(fUser != null){
             userId = fUser.getUid();

@@ -42,11 +42,14 @@ public class UsersListFragment extends Fragment {
     List<User> userList;
     FirebaseUser fUser;
     DatabaseReference dbRef;
+    String groupID;
+    Boolean addParticipant, isAdmin;
 
 
     public UsersListFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,7 +61,16 @@ public class UsersListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.list_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        
+        if (this.getArguments() != null) {
+            groupID = this.getArguments().getString("groupID");
+            addParticipant = this.getArguments().getBoolean("settings");
+            isAdmin = this.getArguments().getBoolean("isAdmin");
+        }
+        else{
+            groupID = "";
+            addParticipant = false;
+            isAdmin = false;
+        }
         //init & all get users to list
         //ToDo change all to friends only
         userList = new ArrayList<>();
@@ -79,7 +91,7 @@ public class UsersListFragment extends Fragment {
                     if(!fUser.getUid().equals(user.getId())){
                         userList.add(user);
                     }
-                    adapter = new UsersAdapter(getActivity(), userList, "", false, false);
+                    adapter = new UsersAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
                     recyclerView.setAdapter(adapter);
                 }
 
@@ -104,7 +116,7 @@ public class UsersListFragment extends Fragment {
                             userList.add(user);
                         }
                     }
-                    adapter = new UsersAdapter(getActivity(), userList, "", false, false);
+                    adapter = new UsersAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
                     adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);
                 }

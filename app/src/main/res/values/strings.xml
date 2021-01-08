@@ -24,8 +24,10 @@
     <string name="chat_s_name">Chat title</string>
     <string name="enter_a_massage">Enter a massage</string>
     <string name="chat_avatar">chat_avatar</string>
-    <string name="basket">basket</string>
-    <string name="todo">TODO</string>>
+    <string name="basket">Basket</string>
+    <string name="baskets">Baskets</string>
+    <string name="todo">TODO</string>
+    <string name="wallet">Wallet</string>>
 
 
 </resources>

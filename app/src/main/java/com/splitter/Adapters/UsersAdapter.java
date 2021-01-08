@@ -26,7 +26,6 @@ import com.splitter.Model.User;
 import com.splitter.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
@@ -115,11 +114,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         if(which == 0){
                                                             //ToDo remove admin permissions
-                                                            setParticipant(user, "");
+                                                            setParticipant(holder, user, "participant");
                                                         }
                                                         else{
                                                             //TODO remove participant
-                                                            removeParticipant(user);
+                                                            removeParticipant(holder, user);
                                                         }
                                                     }
                                                 });
@@ -132,11 +131,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         if(which == 0){
                                                             //ToDo give admin permissions
-                                                            setParticipant(user, "admin");
+                                                            setParticipant(holder, user, "admin");
                                                         }
                                                         else{
                                                             //TODO remove participant
-                                                            removeParticipant(user);
+                                                            removeParticipant(holder, user);
                                                         }
                                                     }
                                                 });
@@ -150,11 +149,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     if(which == 0){
                                                         //ToDo give admin permissions
-                                                        setParticipant(user, "admin");
+                                                        setParticipant(holder, user, "admin");
                                                     }
                                                     else{
                                                         //TODO add participant
-                                                        setParticipant(user, "");
+                                                        setParticipant(holder, user, "participant");
                                                     }
                                                 }
                                             });
@@ -200,13 +199,14 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
         });
     }
 
-    private void removeParticipant(User user) {
+    private void removeParticipant(MyHolder holder, User user) {
         DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("Groups");
         groupsRef.child(groupID).child("participants").child(user.getId()).removeValue()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show();
+                        holder.mEmailTv.setText("");
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -216,15 +216,14 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
         });
     }
 
-    private void setParticipant(User user, String admin) {
-        HashMap<String, String> newParticipant = new HashMap<>();
-        newParticipant.put(user.getId(),admin);
+    private void setParticipant(MyHolder holder, User user, String admin) {
         DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("Groups");
-        groupsRef.child(groupID).child("participants").child(user.getId()).setValue(newParticipant)
+        groupsRef.child(groupID).child("participants").child(user.getId()).setValue(admin)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show();
+                holder.mEmailTv.setText(admin);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

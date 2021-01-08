@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/chat_menu_baskets"
+        android:title="@string/baskets"/>
+    <item
+        android:id="@+id/chat_menu_wallet"
+        android:title="@string/wallet"/>
+    <item
         android:id="@+id/chat_menu_settings"
-        android:title="@string/settings" />
+        android:title="@string/settings"/>
 </menu>

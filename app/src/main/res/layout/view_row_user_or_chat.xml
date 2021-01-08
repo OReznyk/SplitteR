@@ -32,7 +32,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt_bold"
-                android:hint="title"
                 android:textColor="@color/colorWhite"
                 android:textSize="24dp" />
 
@@ -41,7 +40,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt"
-                android:hint="textField"
                 android:textColor="@color/colorWhite"
                 android:textSize="18dp" />
 

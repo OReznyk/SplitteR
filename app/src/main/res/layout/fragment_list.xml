@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingBottom="50dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -12,16 +11,15 @@
             android:layout_height="wrap_content"
             android:layout_alignEnd="@+id/list_recyclerView"
             android:layout_alignBottom="@+id/list_recyclerView"
-            android:layout_marginEnd="44dp"
-            android:layout_marginBottom="34dp"
+            android:layout_marginEnd="49dp"
+            android:layout_marginBottom="69dp"
             android:foregroundGravity="center"
             app:srcCompat="@drawable/ic_add_group" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="472dp"
-            android:layout_marginRight="50dp"
+            android:layout_height="match_parent"
             android:scrollbarTrackVertical="@color/colorWhite" />
 
 </RelativeLayout>

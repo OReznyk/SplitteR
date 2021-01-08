@@ -19,11 +19,11 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_row);
+        setContentView(R.layout.activity_main);
         firebaseInit();
         ProfileFragment profileFragment = new ProfileFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.row_container, profileFragment, "");
+        fragmentTransaction.replace(R.id.main_viewPager, profileFragment, "");
         fragmentTransaction.commit();
     }
 
