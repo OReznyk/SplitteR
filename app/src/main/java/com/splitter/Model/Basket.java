@@ -1,118 +1,40 @@
 package com.splitter.Model;
 
-import android.os.Build;
-
-import androidx.annotation.NonNull;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.HashMap;
 import java.util.List;
 
 public class Basket {
-    String basketID, groupID, title, expiringDate, expiringTime;
-    Double totalPrice;
+    String basketID, parentID, title, expiringDate, expiringTime, totalPrice;
     List<String> adminsID;
     HashMap<Product, Integer> listToBye;
-    FirebaseAuth fAuth;
-    FirebaseUser fUser;
 
-    public Basket(String basketID, String title, List<String> adminsID, HashMap<Product, Integer> listToBye) {
+    public Basket() {
+    }
+
+    public Basket(String basketID, String parentID, String title, List<String> adminsID, HashMap<Product, Integer> listToBye) {
         this.basketID = basketID;
+        this.parentID = parentID;
         this.title = title;
         this.expiringDate = "";
         this.expiringTime = "";
         this.adminsID = adminsID;
         this.listToBye = listToBye;
-        this.totalPrice = 0.0;
+        this.totalPrice = "0";
     }
 
-    public Basket(String basketID, String title, String expiringDate, String expiringTime, List<String> adminsID, HashMap<Product, Integer> listToBye) {
+    public Basket(String basketID, String parentID, String title, String expiringDate, String expiringTime, String totalPrice, List<String> adminsID, HashMap<Product, Integer> listToBye) {
         this.basketID = basketID;
+        this.parentID = parentID;
         this.title = title;
         this.expiringDate = expiringDate;
         this.expiringTime = expiringTime;
+        this.totalPrice = totalPrice;
         this.adminsID = adminsID;
         this.listToBye = listToBye;
-        this.totalPrice = 0.0;
     }
 
-    public void delete(){
-        DatabaseReference dbRefToBasket = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID);
-        dbRefToBasket.removeValue();
-    }
-
-    public void deleteProduct(String productID){
-        fAuth = FirebaseAuth.getInstance();
-        fUser = fAuth.getCurrentUser();
-        if(adminsID.contains(fUser.getUid()) && listToBye.containsKey(productID)){
-            DatabaseReference dbRefToGroup = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID);
-            listToBye.remove(productID);
-            HashMap<String, Object> hashMap= new HashMap<>();
-            hashMap.put("listToBye", listToBye);
-            dbRefToGroup.setValue(hashMap);
-        }
-    }
-
-    public void addProduct(Product product, int quantity){
-        fAuth = FirebaseAuth.getInstance();
-        fUser = fAuth.getCurrentUser();
-        if(adminsID.contains(fUser.getUid())){
-            DatabaseReference dbRefToGroup = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID);
-            listToBye.put(product, quantity);
-            HashMap<String, Object> hashMap= new HashMap<>();
-            hashMap.put("listToBye", listToBye);
-            dbRefToGroup.setValue(hashMap);
-        }
-    }
-
-    private void getTotPrice(){
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Products");
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                totalPrice = 0.0;
-                //TODO: change to minimalize runtime!
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    Product product = snapshot.getValue(Product.class);
-                    if(listToBye.containsKey(product.getId())){
-                        //ToDo: totalPrice += product.getPrice() * listToBye.get(product.getId());
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-
-    public double getTotalPrice(){
-        getTotPrice();
+    public String getTotalPrice(){
         return totalPrice;
-    }
-    public void changeProductQuantity(Product product, int quantity){
-        fAuth = FirebaseAuth.getInstance();
-        fUser = fAuth.getCurrentUser();
-        if(adminsID.contains(fUser.getUid())){
-            DatabaseReference dbRefToGroup = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                listToBye.replace(product, quantity);
-            }
-            HashMap<String, Object> hashMap= new HashMap<>();
-            hashMap.put("listToBye", listToBye);
-            dbRefToGroup.setValue(hashMap);
-        }
     }
 
     public List<String> getAdminsID() {
@@ -123,12 +45,12 @@ public class Basket {
         this.adminsID = adminsID;
     }
 
-    public String getGroupID() {
-        return groupID;
+    public String getParentID() {
+        return parentID;
     }
 
-    public void setGroupID(String groupID) {
-        this.groupID = groupID;
+    public void setParentID(String parentID) {
+        this.parentID = parentID;
     }
 
     public String getBasketID() {

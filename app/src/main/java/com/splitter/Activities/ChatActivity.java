@@ -35,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.splitter.Adapters.MessageAdapter;
+import com.splitter.Fragments.BasketsListFragment;
 import com.splitter.Fragments.UsersListFragment;
 import com.splitter.Model.Group;
 import com.splitter.Model.Message;
@@ -63,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
 
     String otherID, userId, groupRole;
     Boolean isGroup;
-
+    HashMap<String, String> basketsIDs;
     List<Message> messageList;
     MessageAdapter messageAdapter;
 
@@ -113,9 +114,11 @@ public class ChatActivity extends AppCompatActivity {
         sendBasketBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i =new Intent(ChatActivity.this,NewBasketActivity.class);
-                startActivity(i);
-                //ToDo: add basket to view
+                Intent i =new Intent(ChatActivity.this, NewBasketActivity.class);
+                //ToDo regular chat basket parentID?
+                i.putExtra("userID", userId);
+                i.putExtra("parentID", otherID);
+                startActivityForResult(i, 1);
             }
         });
         sendAttachmentBtn.setOnClickListener(new View.OnClickListener() {
@@ -177,7 +180,6 @@ public class ChatActivity extends AppCompatActivity {
         groupsRef = firebaseDatabase.getReference("Groups");
     }
 
-
     public void sendMessage(String msg, String thisUserID, String otherId) {
         String timeStamp = getCurrentTime();
         DatabaseReference reference = firebaseDatabase.getReference("Chats");
@@ -234,10 +236,16 @@ public class ChatActivity extends AppCompatActivity {
                 messageList.clear();
                 for(DataSnapshot dataSnapshot: snapshot.getChildren()){
                     Message msg = dataSnapshot.getValue(Message.class);
-                    // TODO change to chatID?ok
-                    if(msg.getReceiver().equals(userId) && msg.getSender().equals(otherID) ||
-                            msg.getReceiver().equals(otherID) && msg.getSender().equals(userId)){
-                        messageList.add(msg);
+                    if(isGroup){
+                        if(msg.getReceiver().equals(otherID)){
+                            messageList.add(msg);
+                        }
+                    }
+                    else{
+                        if(msg.getReceiver().equals(userId) && msg.getSender().equals(otherID) ||
+                                msg.getReceiver().equals(otherID) && msg.getSender().equals(userId)){
+                            messageList.add(msg);
+                        }
                     }
                     messageAdapter = new MessageAdapter(ChatActivity.this, messageList, isGroup);
                     messageAdapter.notifyDataSetChanged();
@@ -285,12 +293,13 @@ public class ChatActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                         User other = dataSnapshot.getValue(User.class);
+                        if(other.getBasketsIDs() != null) basketsIDs = new HashMap<String, String>(other.getBasketsIDs());
+                        else basketsIDs = new HashMap<String, String>();
                         nameTv.setText(other.getName());
                         try {
                             Picasso.get().load(other.getAvatar()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
 
                         }catch (Exception e){
-                            Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
                         }
                         // To get & set typing/online status
                         if(other.getTypingTo().equals(userId)){
@@ -319,12 +328,13 @@ public class ChatActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Group group = dataSnapshot.getValue(Group.class);
+                        if(group.getBasketsIDs() != null) basketsIDs = new HashMap<String, String>(group.getBasketsIDs());
+                        else basketsIDs = new HashMap<String, String>();
                         nameTv.setText(group.getTitle());
                         try {
                             Picasso.get().load(group.getGroupImg()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
 
                         } catch (Exception e) {
-                            Picasso.get().load(R.drawable.ic_default_avatar).into(imgTv);
                         }
                         //ToDo: fill it with participants names in future
                         statusTv.setText(group.getDescription());
@@ -364,6 +374,36 @@ public class ChatActivity extends AppCompatActivity {
         return currentDateAndTime;
     }
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1)
+        {
+            String basketID = data.getStringExtra("basketID");
+            String basketTitle = data.getStringExtra("basketTitle");
+            if(isGroup) addBasketToGroupList(basketID, basketTitle);
+            //TODO else add to chatID
+        }
+    }
+
+    private void addBasketToGroupList(String basketID, String basketTitle) {
+        DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("Groups");
+        // TODO: in future set basket status as value:
+        groupsRef.child(otherID).child("basketsIDs").child(basketID).setValue("")
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        sendMessage(basketTitle + " created", userId, otherID);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ChatActivity.this , "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu){
         //inflating menu
         getMenuInflater().inflate(R.menu.chat_menu, menu);
@@ -385,16 +425,26 @@ public class ChatActivity extends AppCompatActivity {
                     UsersListFragment fragment = new UsersListFragment();
                     fragment.setArguments(args);
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.addToBackStack("users");
                     fragmentTransaction.replace(R.id.container, fragment);
-                    fragmentTransaction.commit();
-                    /*
-                    Intent intent = new Intent(this, NewParticipantActivity.class);
-                    intent.putExtra("groupID", otherID);
-                    intent.putExtra("permissions", groupRole);
-                    startActivity(intent);*/
-
+                    fragmentTransaction.commitAllowingStateLoss();
                 }
                 else Toast.makeText(this, "chat Settings", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.chat_menu_baskets:
+                    //start basketsListFragment and not activity
+                //TODO change to baskets st
+                Bundle args = new Bundle();
+                args.putString("chatID", otherID);
+                args.putBoolean("isGroup", isGroup);
+                ArrayList<String> ids =new ArrayList<>(basketsIDs.keySet());
+                args.putStringArrayList("basketsIDs", ids);
+                BasketsListFragment fragment = new BasketsListFragment();
+                fragment.setArguments(args);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.addToBackStack("baskets");
+                fragmentTransaction.replace(R.id.container, fragment);
+                fragmentTransaction.commitAllowingStateLoss();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

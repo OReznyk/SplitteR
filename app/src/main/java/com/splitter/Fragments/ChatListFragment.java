@@ -66,17 +66,6 @@ public class ChatListFragment extends Fragment {
         getAllChats();
         return view;
     }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        // check if the request code is same as what is passed  here it is 2
-        if(requestCode==1)
-        {
-            String groupID = data.getStringExtra("newGroupID");
-            //TODO: add group to view
-        }
-    }
 
     private void getAllChats() {
         chatListRef.addValueEventListener(new ValueEventListener() {

@@ -11,19 +11,19 @@ public class Group {
     private String groupImg;
     private HashMap<String, String> participants;
     private List<Uri> images;
-    private List<Basket> baskets;
+    private HashMap<String, String> basketsIDs;
 
     public Group() {
     }
 
-    public Group(String id, String title, String description, String groupImg, HashMap<String, String> participants, List<Uri> images, List<Basket> baskets) {
+    public Group(String id, String title, String description, String groupImg, HashMap<String, String> participants, List<Uri> images, HashMap<String, String> baskets) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.groupImg = groupImg;
         this.participants = participants;
         this.images = images;
-        this.baskets = baskets;
+        this.basketsIDs = baskets;
     }
 
     public String getId() {
@@ -74,11 +74,11 @@ public class Group {
         this.images = images;
     }
 
-    public List<Basket> getBaskets() {
-        return baskets;
+    public HashMap<String, String> getBasketsIDs() {
+        return basketsIDs;
     }
 
-    public void setBaskets(List<Basket> baskets) {
-        this.baskets = baskets;
+    public void setBasketsIDs(HashMap<String, String> basketsIDs) {
+        this.basketsIDs = basketsIDs;
     }
 }

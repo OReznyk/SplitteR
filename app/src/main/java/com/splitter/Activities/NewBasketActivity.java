@@ -18,14 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.splitter.Model.Basket;
 import com.splitter.Model.Product;
 import com.splitter.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -78,7 +77,6 @@ public class NewBasketActivity  extends AppCompatActivity {
                     return;
                 }
                 saveBasketToFirebase(bTitle, items);
-                finish();
                 //Important: You can change this to create products from other activities besides Basket startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
             }
         });
@@ -86,22 +84,27 @@ public class NewBasketActivity  extends AppCompatActivity {
     //ToDo:finish it
     private void saveBasketToFirebase(String bTitle, HashMap<Product, Integer> items) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data?
-        FirebaseDatabase fDb = FirebaseDatabase.getInstance();
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser fUser = firebaseAuth.getCurrentUser();
-        DatabaseReference dbRef = fDb.getReference("Baskets" );
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Baskets" );
         DatabaseReference newID = dbRef.push();
-        adminsID.add(fUser.getUid());
-        Basket basket = new Basket(newID.toString(), bTitle, adminsID, items);
+        Intent intent = getIntent();
+        String parentID = intent.getStringExtra("parentID");
+        String userID = intent.getStringExtra("userID");
+        adminsID = new ArrayList<>();
+        adminsID.add(userID);
+        Basket basket = new Basket(newID.getKey(), parentID, bTitle, adminsID, items);
         newID.setValue(basket).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Intent intent=new Intent();
+                intent.putExtra("basketID", newID.getKey());
+                intent.putExtra("basketTitle", basket.getTitle());
+                setResult(1,intent);
+                finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                //to log failure
-                //Log.d(TAG, "Item is not created for "+ "id "+ e.getMessage());
+                Toast.makeText(NewBasketActivity.this, "basket is not added" , Toast.LENGTH_LONG).show();
             }
         });
     }

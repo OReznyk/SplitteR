@@ -28,13 +28,13 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
+public class UsersViewAdapter extends RecyclerView.Adapter<UsersViewAdapter.MyHolder> {
     Context context;
     List<User> userList;
     String groupID;
     Boolean addParticipant, isAdmin;
 
-    public UsersAdapter(Context context, List<User> userList, String groupID, Boolean addParticipant, Boolean isAdmin) {
+    public UsersViewAdapter(Context context, List<User> userList, String groupID, Boolean addParticipant, Boolean isAdmin) {
         this.context = context;
         this.userList = userList;
         this.groupID = groupID;
@@ -57,13 +57,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
 
     @NonNull
     @Override
-    public UsersAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public UsersViewAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_row_user_or_chat, parent, false);
         return new MyHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UsersAdapter.MyHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UsersViewAdapter.MyHolder holder, int position) {
         //get data
         User user = userList.get(position);
         //set data
@@ -105,7 +105,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
                                         if(snapshot.exists()){
                                             // if participant added
                                             String participantPrevRole = "" + snapshot.getValue();
-                                            builder.setTitle("Choose Option");
+                                            builder.setTitle("Choose Option:");
                                             // if participant is admin
                                             if(participantPrevRole.equals("admin")){
                                                 dialogOptions = new String[]{"Remove admin permissions", "Remove participant"};

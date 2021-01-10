@@ -1,6 +1,7 @@
 package com.splitter.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class User {
@@ -12,10 +13,10 @@ public class User {
     private  String cover;
     private String typingTo;
     private String onlineStatus;
-    List<String> chatsIDs;
-    List<String>groupID;
-    List<String>basketsIDs;
-    List<String>friendsIDs;
+    private List<String> chatsIDs;
+    private List<String>groupID;
+    private HashMap<String, String> basketsIDs;
+    private List<String>friendsIDs;
 
     public User(){}
 
@@ -29,12 +30,12 @@ public class User {
         this.typingTo = typingTo;
         this.onlineStatus = onlineStatus;
         chatsIDs = new ArrayList<>();
-        basketsIDs = new ArrayList<>();
+        basketsIDs = new HashMap<String, String>();
         friendsIDs = new ArrayList<>();
         groupID = new ArrayList<>();
     }
 
-    public User(String id, String name, String phone, String email, String avatar, String cover, String typingTo, String onlineStatus, List<String> chatsIDs, List<String> basketsIDs, List<String> friendsIDs) {
+    public User(String id, String name, String phone, String email, String avatar, String cover, String typingTo, String onlineStatus, List<String> chatsIDs, HashMap<String, String> basketsIDs, List<String> friendsIDs) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -120,11 +121,11 @@ public class User {
         this.chatsIDs = chatsIDs;
     }
 
-    public List<String> getBasketsIDs() {
+    public HashMap<String, String> getBasketsIDs() {
         return basketsIDs;
     }
 
-    public void setBasketsIDs(List<String> basketsIDs) {
+    public void setBasketsIDs(HashMap<String, String> basketsIDs) {
         this.basketsIDs = basketsIDs;
     }
 

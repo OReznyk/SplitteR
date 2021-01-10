@@ -33,9 +33,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
 
     Context context;
     List<Message> chatList;
-    Boolean isGroup = false;
+    Boolean isGroup;
     FirebaseUser fUser;
-    String sender;
 
     public MessageAdapter(Context context, List<Message> chatList, Boolean isGroup) {
         this.context = context;
@@ -62,9 +61,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
     public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
         Message msg = chatList.get(position);
         if(isGroup) {
-            sender = "hidden";
-            setSenderName(msg.getReceiver());
-            holder.senderTv.setText(sender);
+            setSenderName(holder, msg.getSender());
         }
         holder.msgTv.setText(msg.getMsg());
         holder.timeTv.setText(msg.getTimeStamp());
@@ -99,7 +96,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
         });
     }
 
-    private void setSenderName(String senderID){
+    private void setSenderName(MyHolder holder, String senderID){
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = firebaseDatabase.getReference("Users");
         Query chatQuery = dbRef.orderByChild("id").equalTo(senderID);
@@ -107,8 +104,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    // To get & set image & name
-                    sender = ""+dataSnapshot.child("name").getValue();
+                    String sender = ""+dataSnapshot.child("name").getValue();
+                    holder.senderTv.setText(sender);
                     break;
                 }
             }
@@ -120,8 +117,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
         });
     }
     public void deleteMsg(String key) {
+        //ToDo: change to only sender
         DatabaseReference dbRefToMSG = FirebaseDatabase.getInstance().getReference("Chats").child(key);
-        //dbRefToMSG.removeValue();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("msg", "This message was deleted...");
         dbRefToMSG.updateChildren(hashMap);

@@ -83,15 +83,13 @@ public class NewGroupActivity  extends AppCompatActivity {
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("Groups");
         DatabaseReference newID = dbRef.push();
-        group = new Group(newID.getKey(), gTitle, gDescription, "", participants, new ArrayList<>(), new ArrayList<>());
+        group = new Group(newID.getKey(), gTitle, gDescription, "", participants, new ArrayList<>(), new HashMap<String, String>());
         newID.setValue(group).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 if(imgURI != null){
                     Uploader uploader = new Uploader();
-                    String uploadedImg = uploader.uploadPhoto(imgURI, "groups", group.getId(), "groupImg");
-                    if(uploadedImg != "") group.setGroupImg(uploadedImg);
-                    newID.setValue(group);
+                    uploader.uploadPhoto("Groups", imgURI, "groups", group.getId(), "groupImg");
                 }
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("newGroupID", group.getId());

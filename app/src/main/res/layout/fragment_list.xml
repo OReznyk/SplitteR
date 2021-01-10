@@ -11,7 +11,7 @@
             android:layout_height="wrap_content"
             android:layout_alignEnd="@+id/list_recyclerView"
             android:layout_alignBottom="@+id/list_recyclerView"
-            android:layout_marginEnd="49dp"
+            android:layout_marginEnd="62dp"
             android:layout_marginBottom="69dp"
             android:foregroundGravity="center"
             app:srcCompat="@drawable/ic_add_group" />
@@ -19,7 +19,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="492dp"
             android:scrollbarTrackVertical="@color/colorWhite" />
 
 </RelativeLayout>

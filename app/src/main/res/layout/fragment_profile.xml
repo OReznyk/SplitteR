@@ -28,7 +28,9 @@
             android:layout_width="match_parent"
             android:layout_height="130dp"
             android:layout_marginTop="95dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/colorAccent"
+            >
 
             <ImageView
                 android:id="@+id/ps_avatar"
@@ -41,8 +43,8 @@
                 android:src="@drawable/ic_default_avatar" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="123dp"
+                android:layout_width="152dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView

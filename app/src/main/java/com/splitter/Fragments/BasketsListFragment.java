@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,31 +26,28 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.splitter.Adapters.UsersViewAdapter;
-import com.splitter.Model.User;
+import com.splitter.Adapters.BasketsViewAdapter;
+import com.splitter.Model.Basket;
 import com.splitter.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class UsersListFragment extends Fragment {
+public class BasketsListFragment extends Fragment {
     RecyclerView recyclerView;
     FloatingActionButton floatingActionButton;
-    UsersViewAdapter adapter;
-    List<User> userList;
+    BasketsViewAdapter adapter;
+    List<Basket> basketList;
     FirebaseUser fUser;
     DatabaseReference dbRef;
-    String groupID;
-    Boolean addParticipant, isAdmin;
+    String parentID;
+    List <String> basketsIDs;
+    Boolean isGroup;
 
 
-    public UsersListFragment() {
+    public BasketsListFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,37 +59,40 @@ public class UsersListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.list_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        basketsIDs = new ArrayList<>();
         if (this.getArguments() != null) {
-            groupID = this.getArguments().getString("groupID");
-            addParticipant = this.getArguments().getBoolean("settings");
-            isAdmin = this.getArguments().getBoolean("isAdmin");
+            parentID = this.getArguments().getString("chatID");
+            basketsIDs = this.getArguments().getStringArrayList("basketsIDs");
+            isGroup = this.getArguments().getBoolean("isGroup");
         }
         else{
-            groupID = "";
-            addParticipant = false;
-            isAdmin = false;
+            parentID = "";
+            basketsIDs = new ArrayList<>();
+            isGroup = false;
         }
-        //init & all get users to list
-        //ToDo change all to friends only
-        userList = new ArrayList<>();
-        getAllUsers();
-        
+        if(basketsIDs.isEmpty()) {
+            Toast.makeText(getContext(), "No baskets added" , Toast.LENGTH_LONG).show();}
+        else {
+            basketList = new ArrayList<>();
+            getAllBaskets();
+        }
+
         return view;
     }
 
-    private void getAllUsers() {
+    private void getAllBaskets() {
         if(dbRef == null) initFirebase();
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
+                basketList.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
+                    Basket basket = snapshot.getValue(Basket.class);
 
-                    if(!fUser.getUid().equals(user.getId())){
-                        userList.add(user);
+                    if(basketsIDs.contains(basket.getBasketID())){
+                        basketList.add(basket);
                     }
-                    adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
+                    adapter = new BasketsViewAdapter(getActivity(), basketList, parentID, isGroup);
                     recyclerView.setAdapter(adapter);
                 }
 
@@ -103,20 +104,20 @@ public class UsersListFragment extends Fragment {
             }
         });
     }
-    public void searchUsers(String s){
+    public void searchBaskets(String s){
         if(dbRef == null) initFirebase();
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
+                basketList.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-                    if(!user.getId().equals(fUser.getUid())){
-                        if(user.getName().toLowerCase().contains(s.toLowerCase()) || user.getEmail().toLowerCase().contains(s.toLowerCase())) {
-                            userList.add(user);
+                    Basket basket = snapshot.getValue(Basket.class);
+                    if(!basket.getParentID().equals(parentID)){
+                        if(basket.getTitle().toLowerCase().contains(s.toLowerCase())) {
+                            basketList.add(basket);
                         }
                     }
-                    adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
+                    adapter = new BasketsViewAdapter(getActivity(), basketList, parentID, isGroup);
                     adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);
                 }
@@ -131,8 +132,9 @@ public class UsersListFragment extends Fragment {
     }
     private void initFirebase(){
         fUser = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference("Users");
+        dbRef = FirebaseDatabase.getInstance().getReference("Baskets");
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
@@ -149,20 +151,23 @@ public class UsersListFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if(!TextUtils.isEmpty(query.trim())){searchUsers(query);}
-                else getAllUsers();
+                if(!TextUtils.isEmpty(query.trim())){
+                    searchBaskets(query);}
+                else getAllBaskets();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(!TextUtils.isEmpty(newText.trim())){searchUsers(newText);}
-                else getAllUsers();
+                if(!TextUtils.isEmpty(newText.trim())){
+                    searchBaskets(newText);}
+                else getAllBaskets();
                 return false;
             }
         });
 
-         super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
+
 
 }

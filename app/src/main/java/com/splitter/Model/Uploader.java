@@ -34,22 +34,23 @@ public class Uploader {
         firebaseInit();
     }
 
-    public String uploadPhoto(Uri uri, String path, String parentId, String imageTag) {
-        DatabaseReference dbRef = firebaseDatabase.getReference("");
+    public boolean uploadPhoto(String tableName, Uri uri, String path, String parentId, String imageTag) {
+        DatabaseReference dbRef = firebaseDatabase.getReference(tableName);
         String tagPath = "images" + "/" + path + "/" + parentId + "/" + imageTag;
         StorageReference sReference = storageReference.child(tagPath);
         sReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
-                while (!task.isSuccessful()) ;
+                while (!task.isSuccessful());
+                Uri img = task.getResult();
                 if (task.isSuccessful()) {
                     HashMap<String, Object> results = new HashMap<>();
+                    results.put(imageTag, img.toString());
                     dbRef.child(parentId).updateChildren(results).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "Success: image uploaded ");
-                            downloadUri = task.getResult().toString();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -57,7 +58,8 @@ public class Uploader {
                             Log.d(TAG, "Failure: image not uploaded " + e.getMessage());
                         }
                     });
-                } else {
+                }
+                else {
                     Log.d(TAG, "Failure: uriTask not successful ");
                 }
             }
@@ -67,7 +69,7 @@ public class Uploader {
                 Log.d(TAG, "Failure: uriTask not successful " + e.getMessage());
             }
         });
-        return downloadUri;
+        return true;
     }
 
     //ToDo delete ONLY users messages
