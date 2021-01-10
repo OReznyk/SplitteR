@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Basket {
-    String basketID, parentID, title, expiringDate, expiringTime, totalPrice;
+    String basketID, creatorID, title, expiringDate, expiringTime, totalPrice;
     List<String> adminsID;
     HashMap<Product, Integer> listToBye;
 
     public Basket() {
     }
 
-    public Basket(String basketID, String parentID, String title, List<String> adminsID, HashMap<Product, Integer> listToBye) {
+    public Basket(String basketID, String creatorID, String title, List<String> adminsID, HashMap<Product, Integer> listToBye) {
         this.basketID = basketID;
-        this.parentID = parentID;
+        this.creatorID = creatorID;
         this.title = title;
         this.expiringDate = "";
         this.expiringTime = "";
@@ -22,9 +22,9 @@ public class Basket {
         this.totalPrice = "0";
     }
 
-    public Basket(String basketID, String parentID, String title, String expiringDate, String expiringTime, String totalPrice, List<String> adminsID, HashMap<Product, Integer> listToBye) {
+    public Basket(String basketID, String creatorID, String title, String expiringDate, String expiringTime, String totalPrice, List<String> adminsID, HashMap<Product, Integer> listToBye) {
         this.basketID = basketID;
-        this.parentID = parentID;
+        this.creatorID = creatorID;
         this.title = title;
         this.expiringDate = expiringDate;
         this.expiringTime = expiringTime;
@@ -45,12 +45,12 @@ public class Basket {
         this.adminsID = adminsID;
     }
 
-    public String getParentID() {
-        return parentID;
+    public String getCreatorID() {
+        return creatorID;
     }
 
-    public void setParentID(String parentID) {
-        this.parentID = parentID;
+    public void setCreatorID(String creatorID) {
+        this.creatorID = creatorID;
     }
 
     public String getBasketID() {

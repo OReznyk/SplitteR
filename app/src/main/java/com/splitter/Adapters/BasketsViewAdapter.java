@@ -30,13 +30,11 @@ import static android.content.ContentValues.TAG;
 public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.MyHolder> {
     Context context;
     List<Basket> basketsList;
-    String parentID;
     Boolean isGroup;
 
-    public BasketsViewAdapter(Context context, List<Basket> basketList, String parentID , Boolean isGroup) {
+    public BasketsViewAdapter(Context context, List<Basket> basketList, Boolean isGroup) {
         this.context = context;
         this.basketsList = basketList;
-        this.parentID = parentID;
         this.isGroup = isGroup;
     }
 
@@ -86,7 +84,7 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
                         }
                         else{
                             // remove basket
-                            removeBasketFromDB(basket.getBasketID());
+                            removeBasketFromDB(basket);
                             basketsList.remove(position);
                             notifyDataSetChanged();
                         }
@@ -102,13 +100,18 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
        // show alert list dialog with custom product adapter
     }
 
-    private void removeBasketFromDB(String basketID) {
+    private void removeBasketFromDB(Basket basket) {
         DatabaseReference basketsRef = FirebaseDatabase.getInstance().getReference("Baskets");
-        basketsRef.child(basketID).removeValue()
+        basketsRef.child(basket.getBasketID()).removeValue()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        deleteBasketFromList(basketID);
+                        if(isGroup){
+                            deleteBasketFromList("Groups", basket);
+                        }
+                        else{
+                            deleteBasketFromList("Users", basket);
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -119,27 +122,23 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
                 });
     }
 
-    private void deleteBasketFromList(String basketID) {
-        DatabaseReference dbRef;
-        if(isGroup){
-            dbRef = FirebaseDatabase.getInstance().getReference("Groups");
+    private void deleteBasketFromList(String path, Basket basket) {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(path);
+        for (String adminID: basket.getAdminsID()) {
+            dbRef.child(adminID).child("basketsIDs").child(basket.getBasketID()).removeValue()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Basket Successfully deleted! " + basket.getBasketID());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
-        else{
-            dbRef = FirebaseDatabase.getInstance().getReference("Users");
-        }
-        dbRef.child(parentID).child("basketsIDs").child(basketID).removeValue()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Basket Successfully deleted! " + basketID);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     @Override

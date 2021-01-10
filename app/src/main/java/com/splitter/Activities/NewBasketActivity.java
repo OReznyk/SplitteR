@@ -84,14 +84,15 @@ public class NewBasketActivity  extends AppCompatActivity {
     //ToDo:finish it
     private void saveBasketToFirebase(String bTitle, HashMap<Product, Integer> items) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data?
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Baskets" );
-        DatabaseReference newID = dbRef.push();
+        DatabaseReference newID = FirebaseDatabase.getInstance().getReference("Baskets" ).push();
         Intent intent = getIntent();
-        String parentID = intent.getStringExtra("parentID");
+        String parentID = intent.getStringExtra("otherID");
         String userID = intent.getStringExtra("userID");
+        Boolean isGroup = intent.getBooleanExtra("isGroup", false);
         adminsID = new ArrayList<>();
-        adminsID.add(userID);
-        Basket basket = new Basket(newID.getKey(), parentID, bTitle, adminsID, items);
+        adminsID.add(parentID);
+        if(!isGroup) adminsID.add(userID);
+        Basket basket = new Basket(newID.getKey(), userID, bTitle, adminsID, items);
         newID.setValue(basket).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

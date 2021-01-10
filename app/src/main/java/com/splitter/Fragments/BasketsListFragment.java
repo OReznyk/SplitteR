@@ -41,7 +41,6 @@ public class BasketsListFragment extends Fragment {
     FirebaseUser fUser;
     DatabaseReference dbRef;
     String parentID;
-    List <String> basketsIDs;
     Boolean isGroup;
 
 
@@ -59,24 +58,17 @@ public class BasketsListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.list_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        basketsIDs = new ArrayList<>();
         if (this.getArguments() != null) {
             parentID = this.getArguments().getString("chatID");
-            basketsIDs = this.getArguments().getStringArrayList("basketsIDs");
             isGroup = this.getArguments().getBoolean("isGroup");
         }
         else{
             parentID = "";
-            basketsIDs = new ArrayList<>();
             isGroup = false;
         }
-        if(basketsIDs.isEmpty()) {
-            Toast.makeText(getContext(), "No baskets added" , Toast.LENGTH_LONG).show();}
-        else {
-            basketList = new ArrayList<>();
-            getAllBaskets();
-        }
 
+        basketList = new ArrayList<>();
+        getAllBaskets();
         return view;
     }
 
@@ -88,14 +80,24 @@ public class BasketsListFragment extends Fragment {
                 basketList.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Basket basket = snapshot.getValue(Basket.class);
-
-                    if(basketsIDs.contains(basket.getBasketID())){
-                        basketList.add(basket);
+                    if(isGroup){
+                        if(basket.getAdminsID().contains(parentID)){
+                            basketList.add(basket);
+                        }
                     }
-                    adapter = new BasketsViewAdapter(getActivity(), basketList, parentID, isGroup);
+                    else{
+                        if(basket.getAdminsID().contains(parentID) && basket.getAdminsID().contains(fUser.getUid())){
+                            basketList.add(basket);
+                        }
+                    }
+                }
+                if(basketList.isEmpty()) {
+                    Toast.makeText(getContext(), "No baskets added" , Toast.LENGTH_LONG).show();
+                }
+                else {
+                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup);
                     recyclerView.setAdapter(adapter);
                 }
-
             }
 
             @Override
@@ -110,18 +112,29 @@ public class BasketsListFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 basketList.clear();
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Basket basket = snapshot.getValue(Basket.class);
-                    if(!basket.getParentID().equals(parentID)){
-                        if(basket.getTitle().toLowerCase().contains(s.toLowerCase())) {
-                            basketList.add(basket);
+                    if (isGroup) {
+                        if (basket.getAdminsID().contains(parentID)) {
+                            if (basket.getTitle().toLowerCase().contains(s.toLowerCase())) {
+                                basketList.add(basket);
+                            }
+                        }
+                    } else {
+                        if (basket.getAdminsID().contains(parentID) && basket.getAdminsID().contains(fUser.getUid())) {
+                            if (basket.getTitle().toLowerCase().contains(s.toLowerCase())) {
+                                basketList.add(basket);
+                            }
                         }
                     }
-                    adapter = new BasketsViewAdapter(getActivity(), basketList, parentID, isGroup);
+                }
+                if (basketList.isEmpty()) {
+                    Toast.makeText(getContext(), "No baskets added", Toast.LENGTH_LONG).show();
+                } else {
+                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup);
                     adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);
                 }
-
             }
 
             @Override

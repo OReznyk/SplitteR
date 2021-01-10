@@ -115,9 +115,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i =new Intent(ChatActivity.this, NewBasketActivity.class);
-                //ToDo regular chat basket parentID?
                 i.putExtra("userID", userId);
-                i.putExtra("parentID", otherID);
+                i.putExtra("isGroup", isGroup);
+                i.putExtra("otherID", otherID);
                 startActivityForResult(i, 1);
             }
         });
@@ -329,7 +329,10 @@ public class ChatActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Group group = dataSnapshot.getValue(Group.class);
                         if(group.getBasketsIDs() != null) basketsIDs = new HashMap<String, String>(group.getBasketsIDs());
-                        else basketsIDs = new HashMap<String, String>();
+                        else {
+                            basketsIDs = new HashMap<String, String>();
+
+                        }
                         nameTv.setText(group.getTitle());
                         try {
                             Picasso.get().load(group.getGroupImg()).placeholder(R.drawable.ic_default_avatar).into(imgTv);
@@ -381,7 +384,9 @@ public class ChatActivity extends AppCompatActivity {
         {
             String basketID = data.getStringExtra("basketID");
             String basketTitle = data.getStringExtra("basketTitle");
-            if(isGroup) addBasketToGroupList(basketID, basketTitle);
+            if(isGroup && !basketID.isEmpty()) addBasketToGroupList(basketID, basketTitle);
+            if(!isGroup && !basketID.isEmpty()){ sendMessage(basketTitle + " created", userId, otherID);}
+            else Toast.makeText(ChatActivity.this, "basket not saved", Toast.LENGTH_SHORT).show();
             //TODO else add to chatID
         }
     }
