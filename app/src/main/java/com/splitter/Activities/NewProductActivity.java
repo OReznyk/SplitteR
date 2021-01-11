@@ -16,7 +16,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.splitter.Model.Product;
+import com.splitter.Model.Item;
 import com.splitter.R;
 
 public class NewProductActivity extends AppCompatActivity {
@@ -40,7 +40,6 @@ public class NewProductActivity extends AppCompatActivity {
         title = findViewById(R.id.item_titleIv);
         price = findViewById(R.id.item_priceIv);
         saveBtn = findViewById(R.id.item_saveBtn);
-
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,16 +70,18 @@ public class NewProductActivity extends AppCompatActivity {
     }
 
     private void saveProductToFirebase(String img, String pType, String pTitle, String pPrice) {
-        //ToDo: Do We want to save the creator of item or save "items by types" in users data?
+        Intent intent = getIntent();
+        String creatorID = intent.getStringExtra("creatorID");
+        // save as regular item
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = fDb.getReference("ItemsByTypes/" + pType);
         DatabaseReference newItemID = dbRef.push();
-        Product product = new Product(newItemID.toString(), img, pTitle, pPrice);
-        newItemID.setValue(product).addOnSuccessListener(new OnSuccessListener<Void>() {
+        Item item = new Item(newItemID.getKey(), img, pTitle, pType,  creatorID, pPrice);
+        newItemID.setValue(item).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("item", product.getId());
+                resultIntent.putExtra("item", item.getId());
                 setResult(RESULT_OK, resultIntent);
                 finish();
             }

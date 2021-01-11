@@ -17,15 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.splitter.Model.Basket;
-import com.splitter.Model.Product;
+import com.splitter.Model.BasketItem;
 import com.splitter.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class NewBasketActivity  extends AppCompatActivity {
@@ -33,9 +31,8 @@ public class NewBasketActivity  extends AppCompatActivity {
     EditText title;
     DatePicker date;
     TimePicker time;
-    Button saveBtn;
-    FloatingActionButton addItemBtn;
-    HashMap<Product , Integer> items;
+    Button saveBtn, addItemBtn;
+    List<BasketItem> items;
     List<String> adminsID;
     //ToDo work on search view
     SearchView searchView;
@@ -43,11 +40,11 @@ public class NewBasketActivity  extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_basket);
+        setContentView(R.layout.activity_create_basket);
         initView();
     }
     private void initView() {
-        items = new HashMap<>();
+        items = new ArrayList<>();
         title = findViewById(R.id.basket_titleIV);
         /*date = findViewById(R.id.basket_dateIv);
         time = findViewById(R.id.basket_timeIv);*/
@@ -60,7 +57,6 @@ public class NewBasketActivity  extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(NewBasketActivity.this, NewProductActivity.class);
                 startActivityForResult(i, 1);
-                //ToDo:add item to HashMap
             }
         });
 
@@ -76,14 +72,13 @@ public class NewBasketActivity  extends AppCompatActivity {
                     title.setFocusable(true);
                     return;
                 }
-                saveBasketToFirebase(bTitle, items);
+                saveBasketToFirebase(bTitle);
                 //Important: You can change this to create products from other activities besides Basket startActivity(new Intent(getApplicationContext(), NewBasketActivity.class));
             }
         });
     }
     //ToDo:finish it
-    private void saveBasketToFirebase(String bTitle, HashMap<Product, Integer> items) {
-        //ToDo: Do We want to save the creator of item or save "items by types" in users data?
+    private void saveBasketToFirebase(String bTitle) {
         DatabaseReference newID = FirebaseDatabase.getInstance().getReference("Baskets" ).push();
         Intent intent = getIntent();
         String parentID = intent.getStringExtra("otherID");

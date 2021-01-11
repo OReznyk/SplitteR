@@ -442,6 +442,10 @@ public class ChatActivity extends AppCompatActivity {
                 Bundle args = new Bundle();
                 args.putString("chatID", otherID);
                 args.putBoolean("isGroup", isGroup);
+                if(isGroup){
+                    args.putBoolean("isAdmin", groupRole.equals("admin"));
+                }
+                else args.putBoolean("isAdmin", true);
                 ArrayList<String> ids =new ArrayList<>(basketsIDs.keySet());
                 args.putStringArrayList("basketsIDs", ids);
                 BasketsListFragment fragment = new BasketsListFragment();

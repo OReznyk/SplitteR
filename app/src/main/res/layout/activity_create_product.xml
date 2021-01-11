@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/item_imgIv"
-        android:layout_width="169dp"
-        android:layout_height="181dp"
+        android:layout_width="102dp"
+        android:layout_height="85dp"
         android:layout_gravity="center"
         android:layout_marginTop="36dp"
         app:layout_constraintBottom_toTopOf="@+id/item_titleIv"

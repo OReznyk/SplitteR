@@ -91,10 +91,10 @@ public class UsersListFragment extends Fragment {
                     if(!fUser.getUid().equals(user.getId())){
                         userList.add(user);
                     }
-                    adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
-                    recyclerView.setAdapter(adapter);
                 }
 
+                adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -116,11 +116,10 @@ public class UsersListFragment extends Fragment {
                             userList.add(user);
                         }
                     }
-                    adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
-                    adapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(adapter);
                 }
-
+                adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
+                adapter.notifyDataSetChanged();
+                recyclerView.setAdapter(adapter);
             }
 
             @Override

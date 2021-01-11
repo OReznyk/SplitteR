@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@color/colorAccent"
@@ -15,15 +16,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <ImageView
+            android:id="@+id/item_imgTv"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            app:srcCompat="@drawable/ic_add_avatar" />
+
         <LinearLayout
-            android:layout_width="205dp"
+            android:layout_width="163dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/product_title_Tv"
+                android:id="@+id/item_title_Tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt_bold"
@@ -32,7 +39,16 @@
                 android:textSize="24dp" />
 
             <TextView
-                android:id="@+id/product_priceTv"
+                android:id="@+id/item_typeTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/unkempt"
+                android:hint="Type"
+                android:textColor="@color/colorWhite"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/item_priceTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt"
@@ -42,25 +58,23 @@
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/product_total_to_buy"
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/item_settingsTv"
+            android:layout_width="48dp"
+            android:layout_height="47dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:ems="10"
-            android:hint="To buy"
-            android:inputType="number"
-            android:textAlignment="center"
-            android:textColorHint="@color/colorWhite" />
+            android:paddingRight="8dp"
+            app:srcCompat="@drawable/ic_send_setttings" />
 
-        <RatingBar
-            android:id="@+id/product_to_buy_ratingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+        <ImageView
+            android:id="@+id/item_deleteTv"
+            android:layout_width="48dp"
+            android:layout_height="47dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:numStars="1"
-            android:stepSize="1"
-            android:isIndicator="true"/>
+            android:paddingRight="8dp"
+            app:srcCompat="@drawable/ic_delete" />
 
     </LinearLayout>
 

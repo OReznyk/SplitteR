@@ -41,7 +41,7 @@ public class BasketsListFragment extends Fragment {
     FirebaseUser fUser;
     DatabaseReference dbRef;
     String parentID;
-    Boolean isGroup;
+    Boolean isGroup, isAdmin;
 
 
     public BasketsListFragment() {
@@ -60,11 +60,11 @@ public class BasketsListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         if (this.getArguments() != null) {
             parentID = this.getArguments().getString("chatID");
-            isGroup = this.getArguments().getBoolean("isGroup");
+            isGroup = this.getArguments().getBoolean("isGroup", false);
+            isAdmin = this.getArguments().getBoolean("isAdmin",false);
         }
         else{
             parentID = "";
-            isGroup = false;
         }
 
         basketList = new ArrayList<>();
@@ -95,7 +95,7 @@ public class BasketsListFragment extends Fragment {
                     Toast.makeText(getContext(), "No baskets added" , Toast.LENGTH_LONG).show();
                 }
                 else {
-                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup);
+                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup, isAdmin);
                     recyclerView.setAdapter(adapter);
                 }
             }
@@ -131,7 +131,7 @@ public class BasketsListFragment extends Fragment {
                 if (basketList.isEmpty()) {
                     Toast.makeText(getContext(), "No baskets added", Toast.LENGTH_LONG).show();
                 } else {
-                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup);
+                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup, isAdmin);
                     adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);
                 }

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground">
+    android:background="@color/colorBackground"
+    android:orientation="vertical">
 
     <EditText
         android:id="@+id/basket_titleIV"
@@ -13,21 +14,17 @@
         android:hint="Basket's Title"
         android:textColor="@color/colorWhite"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_gravity="center"
         app:layout_constraintVertical_bias="0.06" />
 
 
     <LinearLayout
         android:id="@+id/basket_linearLayout"
         android:layout_width="375dp"
-        android:layout_height="481dp"
+        android:layout_height="367dp"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/basket_saveBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/basket_titleIV">
 
         <SearchView
@@ -40,35 +37,30 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/basket_product_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="315dp"
+            >
 
         </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <Button
         android:id="@+id/basket_addItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/basket_linearLayout"
-        app:layout_constraintEnd_toEndOf="@+id/basket_linearLayout"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_create_list" />
+        android:background="@color/colorPrimary"
+        android:text="Create New Item"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center" />
 
     <Button
         android:id="@+id/basket_saveBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="159dp"
-        android:layout_marginEnd="164dp"
-        android:layout_marginBottom="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="18dp"
         android:background="@color/colorPrimary"
         android:text="Save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+         />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

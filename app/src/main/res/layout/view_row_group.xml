@@ -15,7 +15,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/group_imgIv"
+            android:id="@+id/item_imgTv"
             android:layout_width="70dp"
             android:layout_height="70dp"
             app:srcCompat="@drawable/ic_add_avatar" />
