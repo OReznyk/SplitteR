@@ -73,8 +73,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyHolder> {
     public void onBindViewHolder(@NonNull ItemAdapter.MyHolder holder, int position) {
         BasketItem item = itemsList.get(position);
         holder.titleTv.setText(item.getItem().getName());
-        holder.typeTv.setText(item.getItem().getType());
-        holder.priceTv.setText(item.getItem().getPrice());
         try {
             Picasso.get().load(item.getItem().getImg())
                     .placeholder(R.drawable.ic_item)
@@ -82,20 +80,38 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyHolder> {
         } catch (Exception e) {
         }
         if(isAddItems){
+
+            String q = "type: " + item.getItem().getType();
+            String price =  "price: " + item.getItem().getPrice();
+            holder.typeTv.setText(q);
+            holder.priceTv.setText(price);
             holder.settingsTv.setVisibility(View.GONE);
             holder.deleteTv.setVisibility(View.GONE);
         }
         else{
             // for items in basket
             int reservedQuantity = 0;
-            for (String value: item.getBuyersAndQuantities().values()) {
-                reservedQuantity += Integer.parseInt(value);
+            if(item.getBuyersAndQuantities() != null){
+                for (String value: item.getBuyersAndQuantities().values()) {
+                    reservedQuantity += Integer.parseInt(value);
+                }
             }
+            String price =  "price: " + item.getItem().getPrice();
+            holder.typeTv.setText(price);
+            String q = "quantity to buy: " + item.getItem().getPrice();
+            holder.priceTv.setText(q);
+
             if(reservedQuantity != Integer.parseInt(item.getQuantity())){
                 // if still not all items reserved change color
                 holder.card.setCardBackgroundColor(Color.CYAN);
             }
             //ToDO: items settings / deleting options
+            if(isAdmin){
+
+            }
+            else{
+
+            }
         }
         holder.card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,15 +179,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyHolder> {
 
     private void changeBasketTotalPrice(BasketItem item) {
         int addedPrice = Integer.parseInt(item.getQuantity()) * Integer.parseInt(item.getItem().getPrice());
-        DatabaseReference basketRef = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID);
-        basketRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference basketRef = FirebaseDatabase.getInstance().getReference("Baskets");
+        basketRef.child(basketID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    Basket basket = snapshot.getValue(Basket.class);
+                if(dataSnapshot.exists()) {
+                    Basket basket = dataSnapshot.getValue(Basket.class);
                     int total = Integer.parseInt(basket.getTotalPrice()) + addedPrice;
                     basket.setTotalPrice(String.valueOf(total));
-                    basketRef.setValue(basket);
+                    basketRef.child(basketID).setValue(basket);
                 }
             }
 

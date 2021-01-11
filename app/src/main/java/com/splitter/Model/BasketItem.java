@@ -7,6 +7,9 @@ public class BasketItem {
     HashMap<String, String> buyersAndQuantities;
     Item item;
 
+    public BasketItem() {
+    }
+
     public BasketItem(String id, String quantity, HashMap<String, String> buyersAndQuantities, Item item) {
         this.id = id;
         this.quantity = quantity;

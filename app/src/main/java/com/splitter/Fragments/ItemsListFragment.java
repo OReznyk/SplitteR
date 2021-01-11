@@ -68,21 +68,7 @@ public class ItemsListFragment extends Fragment {
 
     private void getItems() {
         basketItemsList = new ArrayList<>();
-        if(!onlyBasketItems && !onlyUserItems) {
-            // for add items to basket option
-            getBasketItems();
-            List<BasketItem> existingItems = new ArrayList<>(basketItemsList);
-            basketItemsList.clear();
-            for (String type:itemsTypes) {
-                getOtherItems(existingItems, type);
-            }
-            adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, true);
-        }
-        else {
-            getBasketItems();
-            adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, false);
-        }
-        if(!basketItemsList.isEmpty())recyclerView.setAdapter(adapter);
+        getBasketItems();
     }
 
     private void getBasketItems() {
@@ -95,6 +81,16 @@ public class ItemsListFragment extends Fragment {
                     BasketItem item = snapshot.getValue(BasketItem.class);
                     basketItemsList.add(item);
                 }
+                if(onlyBasketItems){
+                    adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, false);
+                    recyclerView.setAdapter(adapter);
+                }
+                else if(!onlyBasketItems && !onlyUserItems) {
+                    List<BasketItem> existingItems = new ArrayList<>(basketItemsList);
+                    for (String type:itemsTypes) {
+                        getOtherItems(existingItems, type);
+                    }
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -103,38 +99,13 @@ public class ItemsListFragment extends Fragment {
         });
     }
 
-    /*public void searchUsers(String s){
-        if(dbRef == null) initFirebase();
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                itemsList.clear();
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-                    if(!user.getId().equals(fUser.getUid())){
-                        if(user.getName().toLowerCase().contains(s.toLowerCase()) || user.getEmail().toLowerCase().contains(s.toLowerCase())) {
-                            itemsList.add(user);
-                        }
-                    }
-                    adapter = new UsersViewAdapter(getActivity(), itemsList, basketID, onlyBasketItems, isAdmin);
-                    adapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(adapter);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                //TODO fill onCanceled
-            }
-        });
-    }*/
     private void getOtherItems(List<BasketItem> existingItems, String type){
-        dbRef = FirebaseDatabase.getInstance().getReference("ItemsByTypes/"+type);
+        dbRef = FirebaseDatabase.getInstance().getReference("ItemsByTypes");
         //ToDO: search items: not working!!!!!!
-        dbRef.addValueEventListener(new ValueEventListener() {
+        dbRef.child(type).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                basketItemsList.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Item item = snapshot.getValue(Item.class);
                     //creates basket item from item with "" parameters for new rows
@@ -142,6 +113,9 @@ public class ItemsListFragment extends Fragment {
                         BasketItem basketItem = new BasketItem(item);
                         basketItemsList.add(basketItem);}
                 }
+
+                adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, true);
+                recyclerView.setAdapter(adapter);
             }
 
             @Override

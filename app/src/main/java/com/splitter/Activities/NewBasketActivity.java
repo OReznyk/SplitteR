@@ -5,15 +5,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.SearchView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,19 +20,15 @@ import com.splitter.Model.BasketItem;
 import com.splitter.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class NewBasketActivity  extends AppCompatActivity {
     private static final String TAG = "TAG";
     EditText title;
-    DatePicker date;
-    TimePicker time;
-    Button saveBtn, addItemBtn;
-    List<BasketItem> items;
+    Button saveBtn;
+    HashMap<String, BasketItem> items;
     List<String> adminsID;
-    //ToDo work on search view
-    SearchView searchView;
-    RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,21 +36,9 @@ public class NewBasketActivity  extends AppCompatActivity {
         initView();
     }
     private void initView() {
-        items = new ArrayList<>();
+        items = new HashMap<>();
         title = findViewById(R.id.basket_titleIV);
-        /*date = findViewById(R.id.basket_dateIv);
-        time = findViewById(R.id.basket_timeIv);*/
         saveBtn = findViewById(R.id.basket_saveBtn);
-        addItemBtn = findViewById(R.id.basket_addItem);
-        recyclerView = findViewById(R.id.basket_recyclerView);
-
-        addItemBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(NewBasketActivity.this, NewProductActivity.class);
-                startActivityForResult(i, 1);
-            }
-        });
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,5 +98,8 @@ public class NewBasketActivity  extends AppCompatActivity {
             }
         }
     }
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

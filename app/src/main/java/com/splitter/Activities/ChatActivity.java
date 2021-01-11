@@ -61,7 +61,7 @@ public class ChatActivity extends AppCompatActivity {
     DatabaseReference usersRef, groupsRef;
     DatabaseReference refForSeen;
     ValueEventListener seenListener;
-
+    List<String>ItemTypes;
     String otherID, userId, groupRole;
     Boolean isGroup;
     HashMap<String, String> basketsIDs;

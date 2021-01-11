@@ -81,5 +81,4 @@ public class Uploader {
         storageReference = FirebaseStorage.getInstance().getReference();
     }
 
-
 }

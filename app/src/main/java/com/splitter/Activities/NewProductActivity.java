@@ -74,7 +74,7 @@ public class NewProductActivity extends AppCompatActivity {
         String creatorID = intent.getStringExtra("creatorID");
         // save as regular item
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = fDb.getReference("ItemsByTypes/" + pType);
+        DatabaseReference dbRef = fDb.getReference("ItemsByTypes").child(pType);
         DatabaseReference newItemID = dbRef.push();
         Item item = new Item(newItemID.getKey(), img, pTitle, pType,  creatorID, pPrice);
         newItemID.setValue(item).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -93,5 +93,9 @@ public class NewProductActivity extends AppCompatActivity {
                 setResult(RESULT_CANCELED);
             }
         });
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

@@ -18,41 +18,6 @@
         app:layout_constraintVertical_bias="0.06" />
 
 
-    <LinearLayout
-        android:id="@+id/basket_linearLayout"
-        android:layout_width="375dp"
-        android:layout_height="367dp"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/basket_titleIV">
-
-        <SearchView
-            android:id="@+id/basket_search_product"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </SearchView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/basket_product_recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="315dp"
-            >
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/basket_addItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:text="Create New Item"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center" />
-
     <Button
         android:id="@+id/basket_saveBtn"
         android:layout_width="wrap_content"

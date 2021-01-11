@@ -127,5 +127,9 @@ public class NewGroupActivity  extends AppCompatActivity {
             finish();
         }
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
 }

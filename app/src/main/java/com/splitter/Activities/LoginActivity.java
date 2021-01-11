@@ -148,5 +148,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
     }
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

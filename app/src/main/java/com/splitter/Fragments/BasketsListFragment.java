@@ -38,6 +38,7 @@ public class BasketsListFragment extends Fragment {
     FloatingActionButton floatingActionButton;
     BasketsViewAdapter adapter;
     List<Basket> basketList;
+    List<String>itemTypes;
     FirebaseUser fUser;
     DatabaseReference dbRef;
     String parentID;
@@ -68,6 +69,7 @@ public class BasketsListFragment extends Fragment {
         }
 
         basketList = new ArrayList<>();
+        itemTypes = new ArrayList<>();
         getAllBaskets();
         return view;
     }
@@ -94,10 +96,7 @@ public class BasketsListFragment extends Fragment {
                 if(basketList.isEmpty()) {
                     Toast.makeText(getContext(), "No baskets added" , Toast.LENGTH_LONG).show();
                 }
-                else {
-                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup, isAdmin);
-                    recyclerView.setAdapter(adapter);
-                }
+                else getItemTypesFromDB();
             }
 
             @Override
@@ -131,7 +130,7 @@ public class BasketsListFragment extends Fragment {
                 if (basketList.isEmpty()) {
                     Toast.makeText(getContext(), "No baskets added", Toast.LENGTH_LONG).show();
                 } else {
-                    adapter = new BasketsViewAdapter(getActivity(), basketList, isGroup, isAdmin);
+                    adapter = new BasketsViewAdapter(getActivity(), basketList, itemTypes, isGroup, isAdmin);
                     adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);
                 }
@@ -146,6 +145,26 @@ public class BasketsListFragment extends Fragment {
     private void initFirebase(){
         fUser = FirebaseAuth.getInstance().getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference("Baskets");
+    }
+    private void getItemTypesFromDB() {
+        itemTypes.clear();
+        DatabaseReference itemsRef = FirebaseDatabase.getInstance().getReference().child("ItemsByTypes");
+        itemsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot ds : snapshot.getChildren()) {
+                    itemTypes.add(ds.getKey());
+                }
+                adapter = new BasketsViewAdapter(getActivity(), basketList, itemTypes, isGroup, isAdmin);
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
 

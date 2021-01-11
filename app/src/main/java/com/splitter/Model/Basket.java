@@ -1,16 +1,17 @@
 package com.splitter.Model;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Basket {
     String basketID, creatorID, title, expiringDate, expiringTime, totalPrice;
     List<String> adminsID;
-    List<BasketItem> listToBye;
+    HashMap<String, BasketItem> listToBye;
 
     public Basket() {
     }
 
-    public Basket(String basketID, String creatorID, String title, List<String> adminsID, List<BasketItem> listToBye) {
+    public Basket(String basketID, String creatorID, String title, List<String> adminsID, HashMap<String, BasketItem> listToBye) {
         this.basketID = basketID;
         this.creatorID = creatorID;
         this.title = title;
@@ -21,7 +22,7 @@ public class Basket {
         this.totalPrice = "0";
     }
 
-    public Basket(String basketID, String creatorID, String title, String expiringDate, String expiringTime, String totalPrice, List<String> adminsID, List<BasketItem> listToBye) {
+    public Basket(String basketID, String creatorID, String title, String expiringDate, String expiringTime, String totalPrice, List<String> adminsID, HashMap<String, BasketItem> listToBye) {
         this.basketID = basketID;
         this.creatorID = creatorID;
         this.title = title;
@@ -88,11 +89,11 @@ public class Basket {
         this.expiringTime = expiringTime;
     }
 
-    public List<BasketItem> getListToBye() {
+    public HashMap<String, BasketItem> getListToBye() {
         return listToBye;
     }
 
-    public void setListToBye(List<BasketItem> listToBye) {
+    public void setListToBye(HashMap<String, BasketItem> listToBye) {
         this.listToBye = listToBye;
     }
 }

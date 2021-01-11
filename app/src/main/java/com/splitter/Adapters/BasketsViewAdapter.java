@@ -20,11 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.splitter.Activities.NewProductActivity;
 import com.splitter.Fragments.ItemsListFragment;
 import com.splitter.Model.Basket;
@@ -39,13 +36,16 @@ import static android.content.ContentValues.TAG;
 public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.MyHolder> {
     Context context;
     List<Basket> basketsList;
+    List<String> itemTypes;
     Boolean isGroup, isAdmin;
 
-    public BasketsViewAdapter(Context context, List<Basket> basketList, Boolean isGroup, Boolean isAdmin) {
+    public BasketsViewAdapter(Context context, List<Basket> basketList, List<String> itemTypes, Boolean isGroup, Boolean isAdmin) {
         this.context = context;
         this.basketsList = basketList;
+        this.itemTypes = itemTypes;
         this.isGroup = isGroup;
         this.isAdmin = isAdmin;
+
     }
 
     class MyHolder extends RecyclerView.ViewHolder {
@@ -74,7 +74,8 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
         Basket basket = basketsList.get(position);
         //set data
         holder.mTitleTv.setText(basket.getTitle());
-        holder.mTotalPriceTv.setText(basket.getTotalPrice());
+        String totPrice = "total price " + basket.getTotalPrice();
+        holder.mTotalPriceTv.setText(totPrice);
         holder.mAvatarIv.setVisibility(View.INVISIBLE);
 
         //handle item click
@@ -85,22 +86,21 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Choose Option:");
                 //TODO: add options
-                dialogOptions = new String[]{"Open basket", "Open my basket", "", ""};
+
                 if(isAdmin){
-                    dialogOptions[2] = "Add Items";
-                    dialogOptions[3] = "Remove basket";
+                    dialogOptions = new String[]{"Open basket", "Open my basket", "Add Items", "Remove basket"};
                 }
+                else dialogOptions = new String[]{"Open basket", "Open my basket"};
                 builder.setItems(dialogOptions, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        List<String> types = new ArrayList<>();
                         if(which == 0){
                             // open basket: products list
-                            openProductsList(basket.getBasketID(), types, true, false);
+                            openProductsList(basket.getBasketID(), itemTypes, true, false);
                         }
                         if(which == 1){
                             // open my basket: products list
-                            openProductsList(basket.getBasketID(),types, false, true);
+                            openProductsList(basket.getBasketID(), itemTypes, false, true);
                         }
                         if(which == 2){
                             // open dialog to choose product type and then open add products list
@@ -110,9 +110,11 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
                             }
 
                         }
-                        else{
+                        if(which == 3){
                             // remove basket
                             if(isAdmin){
+
+                                dialog.dismiss();
                                 removeBasketFromDB(basket);
                                 basketsList.remove(position);
                                 notifyDataSetChanged();
@@ -120,15 +122,17 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
                         }
                     }
                 });
+                builder.setCancelable(true);
+                builder.setNegativeButton("Cancel", null);
                 builder.show();
             }
         });
 
     }
 
-    private List<String> openDialogForItemsTypes(String basketID) {
-        List<String>types = new ArrayList<>();
-        String[]allTypes = getItemTypesFromDB();
+    private void openDialogForItemsTypes(String basketID) {
+        String[]allTypes = itemTypes.toArray(new String[itemTypes.size()]);
+        List<String>selectedTypes = new ArrayList();
         AlertDialog.Builder typesDialog = new AlertDialog.Builder(context);
         if(allTypes.length != 0){
             //if there are items in db
@@ -144,13 +148,14 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
             typesDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    selectedTypes.clear();
                     for (int i = 0; i<allTypes.length; i++){
                         if (selected[i]) {
-                            types.add(allTypes[i]);
+                            selectedTypes.add(allTypes[i]);
                         }
                     }
-                    if(!types.isEmpty()) {
-                        openProductsList(basketID, types, false, false);
+                    if(!itemTypes.isEmpty()) {
+                        openProductsList(basketID, selectedTypes, false, false);
                     }
                     else Toast.makeText(context, "no types selected", Toast.LENGTH_LONG).show();
                 }
@@ -171,29 +176,6 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
         AlertDialog alert = typesDialog.create();
         alert.setCanceledOnTouchOutside(false);
         alert.show();
-        return types;
-    }
-
-    private String [] getItemTypesFromDB() {
-        List<String>t = new ArrayList<>();
-        DatabaseReference itemTypes = FirebaseDatabase.getInstance().getReference("ItemsByTypes");
-        itemTypes.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChild("name")) {
-                    // run some code
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        //TODO: fix the problem
-        t.add("food");
-        String [] types = t.toArray(new String[0]);
-        return types;
     }
 
     private void openProductsList(String basketID, List<String>itemsTypes, Boolean onlyBasketItems, Boolean onlyUserItems) {

@@ -89,29 +89,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-/*   @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        //inflating menu
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.menu_action_logout:
-                setOnlineStatus("offline");
-                FirebaseAuth.getInstance().signOut();
-
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }*/
-
     @Override
     protected void onPause(){
         setOnlineStatus("offline");

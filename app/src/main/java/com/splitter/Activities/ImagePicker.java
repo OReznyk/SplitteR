@@ -149,4 +149,8 @@ public class ImagePicker extends AppCompatActivity {
         });
         builder.create().show();
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

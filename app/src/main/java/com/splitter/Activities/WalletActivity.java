@@ -11,4 +11,8 @@ public class WalletActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_wallet);
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }
