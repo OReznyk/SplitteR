@@ -37,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.splitter.Adapters.MessageAdapter;
 import com.splitter.Fragments.BasketsListFragment;
 import com.splitter.Fragments.UsersListFragment;
+import com.splitter.Fragments.WalletFragment;
 import com.splitter.Model.Group;
 import com.splitter.Model.Message;
 import com.splitter.Model.User;
@@ -437,8 +438,7 @@ public class ChatActivity extends AppCompatActivity {
                 else Toast.makeText(this, "chat Settings", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.chat_menu_baskets:
-                    //start basketsListFragment and not activity
-                //TODO change to baskets st
+                //start basketsListFragment
                 Bundle args = new Bundle();
                 args.putString("chatID", otherID);
                 args.putBoolean("isGroup", isGroup);
@@ -455,6 +455,18 @@ public class ChatActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.commitAllowingStateLoss();
                 return true;
+
+            case R.id.chat_menu_wallet:
+                Bundle args2 = new Bundle();
+                args2.putString("chatID", otherID);
+                args2.putBoolean("isGroup", isGroup);
+                WalletFragment walletFragment = new WalletFragment();
+                walletFragment.setArguments(args2);
+                FragmentTransaction walletFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                walletFragmentTransaction.addToBackStack("wallet");
+                walletFragmentTransaction.replace(R.id.container, walletFragment);
+                walletFragmentTransaction.commitAllowingStateLoss();
+
             default:
                 return super.onOptionsItemSelected(item);
         }

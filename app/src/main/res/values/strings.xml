@@ -27,7 +27,10 @@
     <string name="basket">Basket</string>
     <string name="baskets">Baskets</string>
     <string name="todo">TODO</string>
-    <string name="wallet">Wallet</string>>
+    <string name="wallet">Wallet</string>
+    <string name="costs">Costs</string>
+    <string name="spent">Spent</string>
+    <string name="debt">Debt</string>>
 
 
 </resources>
