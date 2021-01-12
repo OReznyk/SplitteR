@@ -62,7 +62,6 @@ public class ItemsListFragment extends Fragment {
         isAdmin = this.getArguments().getBoolean("isAdmin", false);
         fUser = FirebaseAuth.getInstance().getCurrentUser();
         getItems();
-        if(basketItemsList.isEmpty()) Toast.makeText(getContext(), "no items here", Toast.LENGTH_LONG).show();
         return view;
     }
 
@@ -72,6 +71,7 @@ public class ItemsListFragment extends Fragment {
     }
 
     private void getBasketItems() {
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         dbRef = FirebaseDatabase.getInstance().getReference("Baskets").child(basketID).child("listToBye");
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -79,16 +79,27 @@ public class ItemsListFragment extends Fragment {
                 basketItemsList.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                     BasketItem item = snapshot.getValue(BasketItem.class);
-                    basketItemsList.add(item);
+                    if(onlyUserItems){
+                        //get items only user selected
+                        if(item.getBuyersAndQuantities() != null && item.getBuyersAndQuantities().containsKey(userID)) basketItemsList.add(item);
+                    }
+                    else{
+                        // get all basket items
+                        basketItemsList.add(item);
+                    }
                 }
-                if(onlyBasketItems){
-                    adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, false);
-                    recyclerView.setAdapter(adapter);
-                }
-                else if(!onlyBasketItems && !onlyUserItems) {
-                    List<BasketItem> existingItems = new ArrayList<>(basketItemsList);
-                    for (String type:itemsTypes) {
-                        getOtherItems(existingItems, type);
+
+                if(basketItemsList.isEmpty()) Toast.makeText(getContext(), "no items here", Toast.LENGTH_LONG).show();
+                else{
+                    if(!onlyBasketItems && !onlyUserItems) {
+                        List<BasketItem> existingItems = new ArrayList<>(basketItemsList);
+                        for (String type:itemsTypes) {
+                            getOtherItems(existingItems, type);
+                        }
+                    }
+                    else{
+                        adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, false, onlyUserItems);
+                        recyclerView.setAdapter(adapter);
                     }
                 }
             }
@@ -114,7 +125,7 @@ public class ItemsListFragment extends Fragment {
                         basketItemsList.add(basketItem);}
                 }
 
-                adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, true);
+                adapter = new ItemAdapter(getActivity(), basketItemsList, basketID, isAdmin, true, onlyUserItems);
                 recyclerView.setAdapter(adapter);
             }
 

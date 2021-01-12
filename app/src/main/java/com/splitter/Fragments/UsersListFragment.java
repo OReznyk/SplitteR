@@ -79,7 +79,7 @@ public class UsersListFragment extends Fragment {
         return view;
     }
 
-    private void getAllUsers() {
+    private void getAllUsers(){
         if(dbRef == null) initFirebase();
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -91,10 +91,10 @@ public class UsersListFragment extends Fragment {
                     if(!fUser.getUid().equals(user.getId())){
                         userList.add(user);
                     }
+                    adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
+                    recyclerView.setAdapter(adapter);
                 }
 
-                adapter = new UsersViewAdapter(getActivity(), userList, groupID, addParticipant, isAdmin);
-                recyclerView.setAdapter(adapter);
             }
 
             @Override

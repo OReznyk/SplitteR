@@ -92,11 +92,11 @@ public class GroupsFragment extends Fragment {
                         Group group = dataSnapshot.getValue(Group.class);
                         groups.add(group);
                     }
-                }
-                adapter = new GroupListAdapter(getActivity(), groups);
-                recyclerView.setAdapter(adapter);
-                for(int i=0; i<groups.size(); i++){
-                    lastMsg(groups.get(i).getId());
+                    adapter = new GroupListAdapter(getActivity(), groups);
+                    recyclerView.setAdapter(adapter);
+                    for(int i=0; i<groups.size(); i++){
+                        lastMsg(groups.get(i).getId());
+                    }
                 }
             }
             @Override
