@@ -40,7 +40,9 @@ import com.splitter.Fragments.UsersListFragment;
 import com.splitter.Fragments.WalletFragment;
 import com.splitter.Model.Group;
 import com.splitter.Model.Message;
+import com.splitter.Model.MoneyFlow;
 import com.splitter.Model.User;
+import com.splitter.Model.Wallet;
 import com.splitter.R;
 import com.squareup.picasso.Picasso;
 
@@ -62,7 +64,6 @@ public class ChatActivity extends AppCompatActivity {
     DatabaseReference usersRef, groupsRef;
     DatabaseReference refForSeen;
     ValueEventListener seenListener;
-    List<String>ItemTypes;
     String otherID, userId, groupRole;
     Boolean isGroup;
     HashMap<String, String> basketsIDs;
@@ -198,21 +199,24 @@ public class ChatActivity extends AppCompatActivity {
                 setResult(RESULT_CANCELED);
             }
         });
+    }
+    private void createChatListNode(String otherId){
         //create chat list node
-         final DatabaseReference chatReference1 = firebaseDatabase.getReference("ChatList").child(userId).child(otherId);
-         chatReference1.addValueEventListener(new ValueEventListener() {
-             @Override
-             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                 if(!snapshot.exists()){
-                     chatReference1.child("id").setValue(otherId);
-                 }
-             }
+        final DatabaseReference chatReference1 = firebaseDatabase.getReference("ChatList").child(userId).child(otherId);
+        chatReference1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!snapshot.exists()){
+                    chatReference1.child("id").setValue(otherId);
+                    createBasketForNewRegularChat();
+                }
+            }
 
-             @Override
-             public void onCancelled(@NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-             }
-         });
+            }
+        });
         final DatabaseReference chatReference2 = firebaseDatabase.getReference("ChatList").child(otherId).child(userId);
         chatReference2.addValueEventListener(new ValueEventListener() {
             @Override
@@ -224,6 +228,24 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    private void createBasketForNewRegularChat(){
+        DatabaseReference walletRef = firebaseDatabase.getReference("Wallet");
+        DatabaseReference walletNewID = walletRef.push();
+        MoneyFlow moneyFlow = new MoneyFlow("0", "0","0");
+        HashMap<String, MoneyFlow> usersMoneyFlow = new HashMap<>();
+        usersMoneyFlow.put(userId, moneyFlow);
+        usersMoneyFlow.put(otherID, moneyFlow);
+        List<String> admin = new ArrayList<>();
+        admin.add(userId);
+        admin.add(otherID);
+        Wallet wallet = new Wallet(walletNewID.getKey(), admin, usersMoneyFlow,"0");
+        walletNewID.setValue(wallet).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
 
             }
         });
@@ -252,6 +274,7 @@ public class ChatActivity extends AppCompatActivity {
                     messageAdapter.notifyDataSetChanged();
                     recyclerView.setAdapter(messageAdapter);
                 }
+                if(messageList.size() == 1 && !isGroup) createChatListNode(otherID);
             }
 
             @Override

@@ -20,11 +20,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.splitter.Model.Group;
+import com.splitter.Model.MoneyFlow;
 import com.splitter.Model.Uploader;
+import com.splitter.Model.Wallet;
 import com.splitter.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class NewGroupActivity  extends AppCompatActivity {
 
@@ -81,27 +84,42 @@ public class NewGroupActivity  extends AppCompatActivity {
     private void saveToFirebase(String img, String gTitle, String gDescription, HashMap<String, String>participants) {
         //ToDo: Do We want to save the creator of item or save "items by types" in users data? Set img
         FirebaseDatabase fDb = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = fDb.getReference("Groups");
-        DatabaseReference newID = dbRef.push();
-        group = new Group(newID.getKey(), gTitle, gDescription, "", participants, new ArrayList<>(), new HashMap<String, String>());
-        newID.setValue(group).addOnSuccessListener(new OnSuccessListener<Void>() {
+        DatabaseReference groupRef = fDb.getReference("Groups");
+        DatabaseReference groupNewID = groupRef.push();
+        //create wallet for group
+        DatabaseReference walletRef = fDb.getReference("Wallet");
+        DatabaseReference walletNewID = walletRef.push();
+        MoneyFlow moneyFlow = new MoneyFlow("0", "0","0");
+        HashMap<String, MoneyFlow> usersMoneyFlow = new HashMap<>();
+        usersMoneyFlow.put(user.getUid(), moneyFlow);
+        List<String> admin = new ArrayList<>();
+        admin.add(groupNewID.getKey());
+        Wallet wallet = new Wallet(walletNewID.getKey(), admin, usersMoneyFlow,"0");
+        walletNewID.setValue(wallet).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                if(imgURI != null){
-                    Uploader uploader = new Uploader();
-                    uploader.uploadPhoto("Groups", imgURI, "groups", group.getId(), "groupImg");
-                }
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("newGroupID", group.getId());
-                setResult(RESULT_OK, resultIntent);
-                finish();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //to log failure
-                Log.d(TAG, "Group is not created for "+ "id "+ e.getMessage());
-                setResult(RESULT_CANCELED);
+                //create group
+                group = new Group(groupNewID.getKey(), gTitle, gDescription, "", participants, new ArrayList<>(), new HashMap<String, String>(), walletNewID.getKey());
+                groupNewID.setValue(group).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        if(imgURI != null){
+                            Uploader uploader = new Uploader();
+                            uploader.uploadPhoto("Groups", imgURI, "groups", group.getId(), "groupImg");
+                        }
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("newGroupID", group.getId());
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //to log failure
+                        Log.d(TAG, "Group is not created for "+ "id "+ e.getMessage());
+                        setResult(RESULT_CANCELED);
+                    }
+                });
             }
         });
     }

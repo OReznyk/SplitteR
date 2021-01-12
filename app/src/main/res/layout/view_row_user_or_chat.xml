@@ -28,7 +28,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/row_top_textField"
+                android:id="@+id/wallet_user_spentTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt_bold"
@@ -36,7 +36,7 @@
                 android:textSize="24dp" />
 
             <TextView
-                android:id="@+id/row_bottom_textField"
+                android:id="@+id/wallet_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/unkempt"

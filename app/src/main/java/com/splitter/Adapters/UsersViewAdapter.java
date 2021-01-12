@@ -49,8 +49,8 @@ public class UsersViewAdapter extends RecyclerView.Adapter<UsersViewAdapter.MyHo
         public MyHolder(@NonNull View view) {
             super(view);
             mAvatarIv = view.findViewById(R.id.row_imgTv);
-            mEmailTv = view.findViewById(R.id.row_bottom_textField);
-            mNameTv = view.findViewById(R.id.row_top_textField);
+            mEmailTv = view.findViewById(R.id.wallet_user_name);
+            mNameTv = view.findViewById(R.id.wallet_user_spentTv);
 
         }
     }

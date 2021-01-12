@@ -7,10 +7,15 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.splitter.Adapters.WalletAdapter;
 import com.splitter.R;
 
+
 public class WalletFragment extends Fragment {
+    RecyclerView recyclerView;
+    WalletAdapter adapter;
 
     public WalletFragment(){}
 

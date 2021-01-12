@@ -55,8 +55,8 @@ public class BasketsViewAdapter extends RecyclerView.Adapter<BasketsViewAdapter.
         public MyHolder(@NonNull View view) {
             super(view);
             mAvatarIv = view.findViewById(R.id.row_imgTv);
-            mTotalPriceTv = view.findViewById(R.id.row_bottom_textField);
-            mTitleTv = view.findViewById(R.id.row_top_textField);
+            mTotalPriceTv = view.findViewById(R.id.wallet_user_name);
+            mTitleTv = view.findViewById(R.id.wallet_user_spentTv);
 
         }
     }

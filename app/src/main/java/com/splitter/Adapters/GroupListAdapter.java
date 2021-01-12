@@ -40,8 +40,8 @@ public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.MyHo
         public MyHolder(@NonNull View view) {
             super(view);
             imgTv = view.findViewById(R.id.row_imgTv);
-            textTv = view.findViewById(R.id.row_bottom_textField);
-            titleTv = view.findViewById(R.id.row_top_textField);
+            textTv = view.findViewById(R.id.wallet_user_name);
+            titleTv = view.findViewById(R.id.wallet_user_spentTv);
         }
     }
 

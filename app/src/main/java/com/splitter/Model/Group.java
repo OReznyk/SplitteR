@@ -12,18 +12,20 @@ public class Group {
     private HashMap<String, String> participants;
     private List<Uri> images;
     private HashMap<String, String> basketsIDs;
+    private String walletID;
 
     public Group() {
     }
 
-    public Group(String id, String title, String description, String groupImg, HashMap<String, String> participants, List<Uri> images, HashMap<String, String> baskets) {
+    public Group(String id, String title, String description, String groupImg, HashMap<String, String> participants, List<Uri> images, HashMap<String, String> basketsIDs, String walletID) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.groupImg = groupImg;
         this.participants = participants;
         this.images = images;
-        this.basketsIDs = baskets;
+        this.basketsIDs = basketsIDs;
+        this.walletID = walletID;
     }
 
     public String getId() {
@@ -80,5 +82,13 @@ public class Group {
 
     public void setBasketsIDs(HashMap<String, String> basketsIDs) {
         this.basketsIDs = basketsIDs;
+    }
+
+    public String getWalletID() {
+        return walletID;
+    }
+
+    public void setWalletID(String walletID) {
+        this.walletID = walletID;
     }
 }
